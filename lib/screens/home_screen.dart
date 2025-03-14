@@ -45,6 +45,8 @@ class HomeScreen extends StatelessWidget {
                         color: AppColors.primaryColor,
                       ),
                       hintText: "Search Pokémon...",
+                      hintStyle: WidgetStateProperty.all(
+                          Theme.of(context).textTheme.bodyMedium),
                     ),
                   ),
                 ),
