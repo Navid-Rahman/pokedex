@@ -1,3 +1,5 @@
+import 'dart:io' show Platform; // For platform detection
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -17,19 +19,100 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: AppColors.primaryColor,
         leading: SvgPicture.asset(
           Assets.kPokeBallIcon,
-          colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcATop),
+          height: 30,
+          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcATop),
         ),
         title: SvgPicture.asset(
           Assets.kAppTitle,
           height: 30,
         ),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Welcome to the Home Screen!',
+          children: [
+            // Search row
+            Row(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: SizedBox(
+                    height: 48,
+                    child: SearchBar(
+                      backgroundColor: WidgetStateProperty.all(Colors.white),
+                      leading: Icon(
+                        Icons.search,
+                        color: AppColors.primaryColor,
+                      ),
+                      hintText: "Search Pokémon...",
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Material(
+                    elevation: 10.0,
+                    shape: const CircleBorder(),
+                    child: Container(
+                      height: 48,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
+                      child: const Icon(Icons.filter_alt),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            // White container takes remaining height with platform-specific handling
+            Expanded(
+              child: Platform.isIOS
+                  ? SafeArea(
+                      top: false,
+                      bottom: true,
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: List.generate(
+                              20, // Generate 20 items for testing
+                              (index) => Container(
+                                height: 100,
+                                margin: const EdgeInsets.all(8.0),
+                                color: Colors.grey[300],
+                                child: Center(child: Text('Item $index')),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  : Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: List.generate(
+                            20, // Generate 20 items for testing
+                            (index) => Container(
+                              height: 100,
+                              margin: const EdgeInsets.all(8.0),
+                              color: Colors.grey[300],
+                              child: Center(child: Text('Item $index')),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
             ),
           ],
         ),
