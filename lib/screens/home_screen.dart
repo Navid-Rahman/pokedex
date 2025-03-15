@@ -89,7 +89,7 @@ class HomeScreen extends StatelessWidget {
                     return const Center(child: Text('No Pokémon data found'));
                   }
 
-                  final pokemonList = snapshot.data!.take(50).toList();
+                  final pokemonList = snapshot.data!.toList();
 
                   return Platform.isIOS
                       ? SafeArea(

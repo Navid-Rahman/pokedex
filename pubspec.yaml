@@ -64,7 +64,6 @@ flutter:
   assets:
     - assets/contents/
     - assets/icons/
-    - assets/images/
     - assets/data/pokemonDB_dataset.json
     - assets/Pokemon_Images/
 
