@@ -7,7 +7,7 @@ import '/core/app_colors.dart';
 import '/core/assets.dart';
 import '/data/pokemon_data.dart';
 import '/models/pokemon.dart';
-import '/widgets/home_grid_container.dart';
+import 'widgets/home_grid_container.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
