@@ -60,13 +60,15 @@ class HomeScreen extends StatelessWidget {
                   child: Material(
                     elevation: 10.0,
                     shape: const CircleBorder(),
-                    child: Container(
-                      height: 48,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
+                    child: GestureDetector(
+                      child: Container(
+                        height: 48,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        child: const Icon(Icons.filter_alt),
                       ),
-                      child: const Icon(Icons.filter_alt),
                     ),
                   ),
                 ),
@@ -98,13 +100,20 @@ class HomeScreen extends StatelessWidget {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: List.generate(
-                                  pokemonList.length,
-                                  (index) => Container(
-                                    height: 100,
-                                    margin: const EdgeInsets.all(8.0),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.all(8.0), // Outer padding
+                              child: GridView.builder(
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 8.0,
+                                  mainAxisSpacing: 8.0,
+                                  childAspectRatio: 1.0,
+                                ),
+                                itemCount: pokemonList.length,
+                                itemBuilder: (context, index) {
+                                  return Container(
                                     decoration: BoxDecoration(
                                       color: Colors.grey[300],
                                       borderRadius: BorderRadius.circular(8),
@@ -112,6 +121,7 @@ class HomeScreen extends StatelessWidget {
                                     child: Center(
                                       child: Text(
                                         pokemonList[index].name,
+                                        textAlign: TextAlign.center,
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyLarge
@@ -120,8 +130,8 @@ class HomeScreen extends StatelessWidget {
                                             ),
                                       ),
                                     ),
-                                  ),
-                                ),
+                                  );
+                                },
                               ),
                             ),
                           ),
@@ -132,13 +142,19 @@ class HomeScreen extends StatelessWidget {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: List.generate(
-                                pokemonList.length,
-                                (index) => Container(
-                                  height: 100,
-                                  margin: const EdgeInsets.all(8.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GridView.builder(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 8.0,
+                                mainAxisSpacing: 8.0,
+                                childAspectRatio: 1.0,
+                              ),
+                              itemCount: pokemonList.length,
+                              itemBuilder: (context, index) {
+                                return Container(
                                   decoration: BoxDecoration(
                                     color: Colors.grey[300],
                                     borderRadius: BorderRadius.circular(8),
@@ -146,6 +162,7 @@ class HomeScreen extends StatelessWidget {
                                   child: Center(
                                     child: Text(
                                       pokemonList[index].name,
+                                      textAlign: TextAlign.center,
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyLarge
@@ -154,8 +171,8 @@ class HomeScreen extends StatelessWidget {
                                           ),
                                     ),
                                   ),
-                                ),
-                              ),
+                                );
+                              },
                             ),
                           ),
                         );
