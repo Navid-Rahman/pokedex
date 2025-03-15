@@ -35,6 +35,8 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.0.17
+  flutter_cache_manager: ^3.4.1
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +66,7 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/data/pokemonDB_dataset.json
+    - assets/Pokemon_Images_DB/
 
   # To add custom fonts to your application, add a fonts section here, in this
   fonts:
