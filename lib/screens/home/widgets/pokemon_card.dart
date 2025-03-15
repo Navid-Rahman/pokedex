@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex/screens/home/widgets/pokemon_image.dart';
-import 'package:pokedex/screens/home/widgets/positioned_background.dart';
 
-import '../../../models/pokemon.dart';
-import '../../../service/pokemon_image_service.dart';
-import '../../../utils/pokedex_loader.dart';
+import '/models/pokemon.dart';
+import '/service/pokemon_image_service.dart';
+import '/utils/pokedex_loader.dart';
+import 'pokemon_image.dart';
+import 'positioned_background.dart';
 
 class PokemonCard extends StatelessWidget {
   final Pokemon pokemon;
