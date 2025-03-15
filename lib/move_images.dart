@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
+
 /// This script moves and renames image files from the source directory to the target directory.
 /// - Only files ending with `_new.png` are processed.
 /// - Brackets `(` and `)` in file names are removed.
@@ -14,7 +16,7 @@ void main() {
 
   /// Check if the source directory exists
   if (!sourceDir.existsSync()) {
-    print('Source directory does not exist: ${sourceDir.path}');
+    debugPrint('Source directory does not exist: ${sourceDir.path}');
     return;
   }
 
@@ -46,5 +48,5 @@ void main() {
   });
 
   /// Print success message
-  print('Images moved successfully!');
+  debugPrint('Images moved successfully!');
 }
