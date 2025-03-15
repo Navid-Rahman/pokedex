@@ -21,7 +21,7 @@ class PokemonImage extends StatelessWidget {
       fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) {
         // Fallback when image can't be found
-        print('Failed to load image: $imagePath for $pokemonName');
+        debugPrint('Failed to load image: $imagePath for $pokemonName');
         return const FallbackImage();
       },
     );
