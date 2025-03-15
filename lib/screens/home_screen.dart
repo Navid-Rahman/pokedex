@@ -2,9 +2,11 @@ import 'dart:io' show Platform; // For platform detection
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pokedex/data/pokemon_data.dart';
 
 import '/core/app_colors.dart';
 import '/core/assets.dart';
+import '../models/pokemon.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -45,6 +47,11 @@ class HomeScreen extends StatelessWidget {
                         color: AppColors.primaryColor,
                       ),
                       hintText: "Search Pokémon...",
+                      hintStyle: WidgetStateProperty.all(
+                        Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.grey[600],
+                            ),
+                      ),
                     ),
                   ),
                 ),
@@ -53,13 +60,15 @@ class HomeScreen extends StatelessWidget {
                   child: Material(
                     elevation: 10.0,
                     shape: const CircleBorder(),
-                    child: Container(
-                      height: 48,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
+                    child: GestureDetector(
+                      child: Container(
+                        height: 48,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        child: const Icon(Icons.filter_alt),
                       ),
-                      child: const Icon(Icons.filter_alt),
                     ),
                   ),
                 ),
@@ -68,51 +77,107 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 24),
             // White container takes remaining height with platform-specific handling
             Expanded(
-              child: Platform.isIOS
-                  ? SafeArea(
-                      top: false,
-                      bottom: true,
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: List.generate(
-                              20, // Generate 20 items for testing
-                              (index) => Container(
-                                height: 100,
-                                margin: const EdgeInsets.all(8.0),
-                                color: Colors.grey[300],
-                                child: Center(child: Text('Item $index')),
+              child: FutureBuilder<List<Pokemon>>(
+                future: PokemonData.loadPokemon(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No Pokémon data found'));
+                  }
+
+                  final pokemonList = snapshot.data!.take(50).toList();
+
+                  return Platform.isIOS
+                      ? SafeArea(
+                          top: false,
+                          bottom: true,
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.all(8.0), // Outer padding
+                              child: GridView.builder(
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 8.0,
+                                  mainAxisSpacing: 8.0,
+                                  childAspectRatio: 1.0,
+                                ),
+                                itemCount: pokemonList.length,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[300],
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        pokemonList[index].name,
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    )
-                  : Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: List.generate(
-                            20, // Generate 20 items for testing
-                            (index) => Container(
-                              height: 100,
-                              margin: const EdgeInsets.all(8.0),
-                              color: Colors.grey[300],
-                              child: Center(child: Text('Item $index')),
+                        )
+                      : Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GridView.builder(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 8.0,
+                                mainAxisSpacing: 8.0,
+                                childAspectRatio: 1.0,
+                              ),
+                              itemCount: pokemonList.length,
+                              itemBuilder: (context, index) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      pokemonList[index].name,
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
-                        ),
-                      ),
-                    ),
+                        );
+                },
+              ),
             ),
           ],
         ),

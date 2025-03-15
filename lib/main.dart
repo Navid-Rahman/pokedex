@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'core/app_theme.dart';
 import 'routes.dart';
 import 'screens/splash_screen.dart';
 
@@ -15,20 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'PokéDex',
       routes: routes,
-      theme: ThemeData(
-        // Set Poppins as the default font family
-        fontFamily: 'Poppins', // Match the family name from pubspec.yaml
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(),
-          bodyMedium: TextStyle(),
-          bodySmall: TextStyle(),
-          headlineLarge: TextStyle(),
-          headlineMedium: TextStyle(),
-          headlineSmall: TextStyle(),
-        ).apply(fontFamily: 'Poppins'),
-
-        useMaterial3: true,
-      ),
+      theme: AppTheme.theme,
       initialRoute: SplashScreen.routeName,
     );
   }
