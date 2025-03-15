@@ -36,8 +36,12 @@ class PokemonImageService {
     final imagePaths = await _cachedImagePaths;
 
     // Convert Pokémon name to the expected file format (underscore-separated with _new.png)
-    final formattedName = '${pokemonName.replaceAll(" ", "_")}_new.png';
-    final expectedPath = 'assets/Pokemon_Images/$formattedName';
+    final formattedName = pokemonName
+        .replaceAll(' ', '_')
+        .replaceAll('-', '_')
+        .replaceAll('(', '')
+        .replaceAll(')', '');
+    final expectedPath = 'assets/Pokemon_Images/${formattedName}_new.png';
 
     // Check if the exact path exists in the cached image paths
     final match = imagePaths.firstWhere(
