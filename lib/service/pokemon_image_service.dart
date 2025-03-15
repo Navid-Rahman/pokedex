@@ -1,78 +1,51 @@
-import 'dart:async';
+import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class PokemonImageService {
-  // Singleton instance
-  static final PokemonImageService _instance = PokemonImageService._internal();
-  factory PokemonImageService() => _instance;
-  PokemonImageService._internal();
+  static Future<List<String>> _cachedImagePaths = Future.value([]);
+  static bool _initialized = false;
 
-  // Cache manager for keeping track of loaded images
-  final cacheManager = DefaultCacheManager();
-
-  // Memory cache to avoid duplicate lookups
-  final Map<String, String> _imagePathCache = {};
-
-  // Asset bundle to check if assets exist
-  final AssetBundle _assetBundle = rootBundle;
-
-  // Get image path for a pokemon, with fallback logic
-  Future<String> getImagePath(String pokemonName) async {
-    if (_imagePathCache.containsKey(pokemonName)) {
-      return _imagePathCache[pokemonName]!;
-    }
-
-    final formattedName = pokemonName.trim(); // Keep spaces, just trim
-
-    final primaryPath =
-        'assets/Pokemon_Images_DB/$formattedName/${formattedName}_new.png';
-    final fallbackPath =
-        'assets/Pokemon_Images_DB/$formattedName/$formattedName.png';
+  // Initialize the service by scanning the assets directory
+  static Future<void> initialize() async {
+    if (_initialized) return;
 
     try {
-      await _assetBundle.load(primaryPath);
-      _imagePathCache[pokemonName] = primaryPath;
-      return primaryPath;
+      // Load the asset manifest to get all available images
+      final manifestContent = await rootBundle.loadString('AssetManifest.json');
+      final Map<String, dynamic> manifestMap = Map.from(
+          manifestContent.isNotEmpty ? json.decode(manifestContent) : {});
+
+      // Filter for Pokémon images ending with "_new.png"
+      _cachedImagePaths = Future.value(manifestMap.keys
+          .where((String key) =>
+              key.startsWith('assets/Pokemon_Images/') &&
+              key.endsWith('_new.png'))
+          .toList());
+
+      _initialized = true;
     } catch (e) {
-      try {
-        await _assetBundle.load(fallbackPath);
-        _imagePathCache[pokemonName] = fallbackPath;
-        return fallbackPath;
-      } catch (e) {
-        final placeholderPath = 'assets/images/placeholder_pokemon.png';
-        _imagePathCache[pokemonName] = placeholderPath;
-        return placeholderPath;
-      }
+      print('Error initializing PokemonImageService: $e');
+      _cachedImagePaths = Future.value([]);
     }
   }
 
-  // Preload a batch of Pokemon images into memory
-  Future<void> preloadPokemonImages(List<String> pokemonNames) async {
-    final futures = <Future>[];
+  // Get image path for a Pokémon name
+  static Future<String> getImagePath(String pokemonName) async {
+    await initialize();
+    final imagePaths = await _cachedImagePaths;
 
-    for (final name in pokemonNames) {
-      futures.add(getImagePath(name).then((path) {
-        // Precache the image in the image cache
-        return precacheImage(
-            AssetImage(path), NavigationService.navigatorKey.currentContext!);
-      }));
-    }
+    // Convert Pokémon name to the expected file format (underscore-separated with _new.png)
+    final formattedName = '${pokemonName.replaceAll(" ", "_")}_new.png';
+    final expectedPath = 'assets/Pokemon_Images/$formattedName';
 
-    await Future.wait(futures);
+    // Check if the exact path exists in the cached image paths
+    final match = imagePaths.firstWhere(
+      (path) => path == expectedPath,
+      orElse: () => '',
+    );
+
+    // Return the matched path if found, otherwise return the expected path for error handling
+    return match.isNotEmpty ? match : expectedPath;
   }
-
-  // Clear cache when no longer needed
-  void clearCache() {
-    _imagePathCache.clear();
-    cacheManager.emptyCache();
-  }
-}
-
-// Helper service to access BuildContext from anywhere for image precaching
-class NavigationService {
-  static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
 }
