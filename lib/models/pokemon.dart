@@ -1,4 +1,5 @@
 class Pokemon {
+  final String number;
   final String name;
   final String type;
   final String species;
@@ -33,6 +34,7 @@ class Pokemon {
   final int speedMax;
 
   Pokemon({
+    required this.number,
     required this.name,
     required this.type,
     required this.species,
@@ -67,8 +69,9 @@ class Pokemon {
     required this.speedMax,
   });
 
-  factory Pokemon.fromJson(String name, Map<String, dynamic> json) {
+  factory Pokemon.fromJson(String name, Map<String, dynamic> json, int index) {
     return Pokemon(
+      number: '#${(index + 1).toString().padLeft(4, '0')}',
       name: name,
       type: json['Type'] as String,
       species: json['Species'] as String,
