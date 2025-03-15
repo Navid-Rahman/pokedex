@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '/models/pokemon.dart';
+import '../service/pokemon_image_service.dart';
 
 class HomeGridContainer extends StatelessWidget {
   final List<Pokemon> pokemonList;
@@ -26,6 +27,8 @@ class HomeGridContainer extends StatelessWidget {
           ),
           itemCount: pokemonList.length,
           itemBuilder: (context, index) {
+            final pokemon = pokemonList[index];
+
             return Card(
               elevation: 4,
               shape: RoundedRectangleBorder(
@@ -40,9 +43,9 @@ class HomeGridContainer extends StatelessWidget {
                     bottom: 0,
                     height: 80,
                     child: Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Color(0xFFEFEFEF),
-                        borderRadius: const BorderRadius.only(
+                        borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(8),
                           bottomRight: Radius.circular(8),
                           topLeft: Radius.circular(12),
@@ -51,23 +54,68 @@ class HomeGridContainer extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Pokémon name centered
+                  Positioned.fill(
+                    child: Center(
+                      child: FutureBuilder<String>(
+                        future: PokemonImageService.getImagePath(pokemon.name),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            );
+                          }
+
+                          final imagePath = snapshot.data ?? '';
+
+                          return Image.asset(
+                            imagePath,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              // Fallback when image can't be found
+                              print(
+                                  'Failed to load image: $imagePath for ${pokemon.name}');
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.catching_pokemon,
+                                      size: 40, color: Colors.grey),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'No image',
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(color: Colors.grey[600]),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                   Positioned(
                     left: 0,
                     right: 0,
                     bottom: 8.0,
                     child: Text(
-                      pokemonList[index].name,
+                      pokemon.name,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
-                  // Pokémon number in top-right corner
                   Positioned(
                     top: 8.0,
                     right: 8.0,
                     child: Text(
-                      pokemonList[index].number,
+                      pokemon.number,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.grey[600],
                           ),
