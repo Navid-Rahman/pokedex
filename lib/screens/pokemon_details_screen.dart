@@ -92,113 +92,124 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             color: Colors.white.withValues(alpha: 0.1),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /// Pokemon Image
-                      AspectRatio(
-                        aspectRatio: 4 / 5,
-                        child: Stack(
-                          children: [
-                            Image.asset(
-                              Assets.kForestCard,
-                              fit: BoxFit.fill,
-                              width: double.infinity,
-                            ),
-                            Center(
-                              child: Image.asset(
-                                widget.imagePath,
-                                height: 300,
-                                filterQuality: FilterQuality.high,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        /// Pokemon Image
+                        AspectRatio(
+                          aspectRatio: 4 / 5,
+                          child: Stack(
+                            children: [
+                              Image.asset(
+                                Assets.kForestCard,
+                                fit: BoxFit.fill,
+                                width: double.infinity,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      /// Pokemon Type
-                      Row(
-                        children: [
-                          Text(
-                            "Type : ",
-                            style:
-                                Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                          ),
-                          const Spacer(),
-                          ...widget.pokemon.type.split(',').map(
-                                (type) => Container(
-                                  margin: const EdgeInsets.only(right: 8),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.2),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Text(
-                                    type.trim(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: Colors.white,
-                                        ),
-                                  ),
+                              Center(
+                                child: Image.asset(
+                                  widget.imagePath,
+                                  height: 300,
+                                  filterQuality: FilterQuality.high,
                                 ),
                               ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                    ],
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        /// Pokemon Type
+                        Row(
+                          children: [
+                            Text(
+                              "Type : ",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            const Spacer(),
+                            ...widget.pokemon.type.split(',').map(
+                                  (type) => Container(
+                                    margin: const EdgeInsets.only(right: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.2),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Text(
+                                      type.trim(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: Colors.white,
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
                   ),
-                ),
 
-                /// TabBar for the 4 tabs
-                TabBar(
-                  controller: _tabController,
-                  indicatorColor: Colors.white,
-                  labelColor: Colors.white,
-                  labelStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                  unselectedLabelColor: Colors.white60,
-                  tabs: const [
-                    Tab(text: "Basic Info"),
-                    Tab(text: "Battle Stats"),
-                    Tab(text: "Egg Details"),
-                    Tab(text: "Base Stats"),
-                  ],
-                ),
-
-                /// TabBarView to show content for each tab
-                Expanded(
-                  child: TabBarView(
+                  // TabBar for the 4 tabs
+                  TabBar(
                     controller: _tabController,
-                    children: [
-                      // Tab 1: Basic Info
-                      _buildBasicInfoTab(),
-
-                      // Tab 2: Battle Stats
-                      _buildBattleStatsTab(),
-
-                      // Tab 3: Egg Details
-                      _buildEggDetailsTab(),
-
-                      // Tab 4: Base Stats
-                      _buildBaseStatsTab(),
+                    indicatorColor: Colors.white,
+                    labelColor: Colors.white,
+                    labelStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                    labelPadding: EdgeInsets.zero,
+                    unselectedLabelColor: Colors.white60,
+                    tabs: const [
+                      Tab(text: "Basic Info"),
+                      Tab(text: "Battle Stats"),
+                      Tab(text: "Egg Details"),
+                      Tab(text: "Base Stats"),
                     ],
                   ),
-                ),
-              ],
+
+                  // Fixed height container for tab content
+                  SizedBox(
+                    height: 300, // Adjust this height as needed
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        // Tab 1: Basic Info
+                        _buildBasicInfoTab(),
+
+                        // Tab 2: Battle Stats
+                        _buildBattleStatsTab(),
+
+                        // Tab 3: Egg Details
+                        _buildEggDetailsTab(),
+
+                        // Tab 4: Base Stats
+                        _buildBaseStatsTab(),
+                      ],
+                    ),
+                  ),
+
+                  // Add some padding at the bottom
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
           ),
         ),
@@ -317,7 +328,8 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
           ),
           const SizedBox(height: 4),
           LinearProgressIndicator(
-            value: value / 255,
+            value:
+                value / 255, // Normalize to 0-1 range (max stat is usually 255)
             backgroundColor: Colors.white10,
             valueColor: AlwaysStoppedAnimation<Color>(
               _getStatColor(value),
