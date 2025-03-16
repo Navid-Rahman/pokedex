@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:pokedex/utils/pokemon_type_chip.dart';
 
 import '/core/assets.dart';
 import '/models/pokemon.dart';
@@ -138,27 +139,7 @@ class _PokemonDetailsScreenState extends State<PokemonDetailsScreen>
                             ),
                             const Spacer(),
                             ...widget.pokemon.type.split(',').map(
-                                  (type) => Container(
-                                    margin: const EdgeInsets.only(right: 8),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color:
-                                          Colors.white.withValues(alpha: 0.2),
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    child: Text(
-                                      type.trim(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
-                                            color: Colors.white,
-                                          ),
-                                    ),
-                                  ),
+                                  (type) => PokemonTypeChip(type: type.trim()),
                                 ),
                           ],
                         ),
