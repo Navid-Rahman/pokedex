@@ -1,0 +1,154 @@
+import 'dart:io' show Platform;
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+
+import '/core/assets.dart';
+import '/models/pokemon.dart';
+import '/utils/pokemon_type_chip.dart';
+
+class PokemonDetailsScreen extends StatelessWidget {
+  final Pokemon pokemon;
+  final String imagePath;
+
+  static const routeName = '/pokemon-details';
+
+  const PokemonDetailsScreen({
+    super.key,
+    required this.pokemon,
+    required this.imagePath,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xff1A1A1D),
+      appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: const Color(0xff1A1A1D),
+        title: Text(
+          pokemon.name,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite_border),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Platform.isIOS
+                  ? SafeArea(
+                      top: false,
+                      bottom: true,
+                      child: _buildContainer(context),
+                    )
+                  : _buildContainer(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContainer(BuildContext context) {
+    final List<String> typesList =
+        pokemon.type.split(',').map((type) => type.trim()).toList();
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            color: Colors.white.withValues(alpha: 0.1),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.asset(
+                          Assets.kForestCard,
+                          fit: BoxFit.fill,
+                          width: double.infinity,
+                          height: double.infinity,
+                        ),
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            // Calculate dynamic size based on available space
+                            final size = constraints.maxHeight * 0.7 <
+                                    constraints.maxWidth * 0.6
+                                ? constraints.maxHeight * 0.7
+                                : constraints.maxWidth * 0.6;
+
+                            return Align(
+                              // Position the Pokemon 20% below center
+                              alignment: const Alignment(0.0, 0.4),
+                              child: Image.asset(
+                                imagePath,
+                                height: size,
+                                width: size,
+                                fit: BoxFit.contain,
+                                filterQuality: FilterQuality.high,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Pokemon Type Row with some padding
+                Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Type : ",
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                        const Spacer(),
+                        ...pokemon.type.split(',').map(
+                              (type) => PokemonTypeChip(type: type.trim()),
+                            ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
