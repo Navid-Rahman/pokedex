@@ -8,7 +8,7 @@ class PokemonImageService {
   static Future<List<String>> _cachedImagePaths = Future.value([]);
   static bool _initialized = false;
 
-  /// Initializes the service by loading the asset manifest and caching the paths of images ending with `_new.png`.
+  /// Initializes the service by loading the asset manifest and caching the paths of pokemon_cards ending with `_new.png`.
   ///
   /// This method should be called before attempting to retrieve image paths. It ensures that the asset
   /// manifest is loaded and the relevant image paths are cached for quick access.
@@ -18,12 +18,12 @@ class PokemonImageService {
     if (_initialized) return;
 
     try {
-      // Load the asset manifest to get all available images.
+      // Load the asset manifest to get all available pokemon_cards.
       final manifestContent = await rootBundle.loadString('AssetManifest.json');
       final Map<String, dynamic> manifestMap = Map.from(
           manifestContent.isNotEmpty ? json.decode(manifestContent) : {});
 
-      // Filter for Pokémon images ending with `_new.png`.
+      // Filter for Pokémon pokemon_cards ending with `_new.png`.
       _cachedImagePaths = Future.value(manifestMap.keys
           .where((String key) =>
               key.startsWith('assets/Pokemon_Images/') &&

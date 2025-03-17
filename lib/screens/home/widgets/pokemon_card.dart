@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '/models/pokemon.dart';
 import '/service/pokemon_image_service.dart';
 import '/utils/pokedex_loader.dart';
-import '../../pokemon_details_screen.dart';
+import '../../pokemon_details/pokemon_details_screen.dart';
 import 'pokemon_image.dart';
 import 'positioned_background.dart';
 

@@ -32,9 +32,10 @@ dependencies:
     sdk: flutter
 
   # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style images.
+  # Use with the CupertinoIcons class for iOS style pokemon_cards.
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.0.17
+  wolt_modal_sheet: ^0.11.0
 
 dev_dependencies:
   flutter_test:
@@ -54,16 +55,17 @@ dev_dependencies:
 flutter:
 
   # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the images in
+  # included with your application, so that you can use the pokemon_cards in
   # the material Icons class.
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/contents/
-    - assets/images/
+    - assets/pokemon_cards/
     - assets/data/pokemonDB_dataset.json
     - assets/Pokemon_Images/
+    - assets/Pokemon_types/
 
   # To add custom fonts to your application, add a fonts section here, in this
   fonts:

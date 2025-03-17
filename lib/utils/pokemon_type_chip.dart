@@ -2,36 +2,17 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import 'pokemon_types.dart';
+
 class PokemonTypeChip extends StatelessWidget {
   final String type;
 
-  PokemonTypeChip({super.key, required this.type});
-
-  final Map<String, Color> typeColors = {
-    "Bug": Color(0xFF92BC2C),
-    "Dark": Color(0xFF595761),
-    "Dragon": Color(0xFF0C69C8),
-    "Electric": Color(0xFFF2D94E),
-    "Fairy": Color(0xFFEE90E6),
-    "Fighting": Color(0xFFD3425F),
-    "Fire": Color(0xFFFBA54C),
-    "Flying": Color(0xFFA1BBEC),
-    "Ghost": Color(0xFF5F6DBC),
-    "Grass": Color(0xFF5FBD58),
-    "Ground": Color(0xFFDA7C4D),
-    "Ice": Color(0xFF75D0C1),
-    "Normal": Color(0xFFA0A29F),
-    "Poison": Color(0xFFB763CF),
-    "Psychic": Color(0xFFFA8581),
-    "Rock": Color(0xFFC9BB8A),
-    "Steel": Color(0xFF5695A3),
-    "Water": Color(0xFF539DDF),
-  };
+  const PokemonTypeChip({super.key, required this.type});
 
   @override
   Widget build(BuildContext context) {
-    // Get the type color or default to grey
-    final Color typeColor = typeColors[type] ?? Colors.grey;
+    final PokemonType pokemonType = PokemonTypes.types[type] ??
+        PokemonType(type: type, color: Colors.grey, imagePath: '');
 
     return Container(
       margin: const EdgeInsets.only(right: 8),
@@ -46,31 +27,31 @@ class PokemonTypeChip extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  typeColor.withValues(alpha: 0.6),
-                  typeColor.withValues(alpha: 0.3),
+                  pokemonType.color.withValues(alpha: 0.6),
+                  pokemonType.color.withValues(alpha: 0.3),
                 ],
               ),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: typeColor.withValues(alpha: 0.7),
+                color: pokemonType.color.withValues(alpha: 0.7),
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: typeColor.withValues(alpha: 0.3),
+                  color: pokemonType.color.withValues(alpha: 0.3),
                   blurRadius: 8,
                   spreadRadius: 1,
                 )
               ],
             ),
             child: Text(
-              type,
+              pokemonType.type,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 shadows: [
                   Shadow(
-                    color: typeColor.withValues(alpha: 0.7),
+                    color: pokemonType.color.withValues(alpha: 0.7),
                     blurRadius: 2,
                   ),
                 ],
