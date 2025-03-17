@@ -23,6 +23,15 @@ class PokemonDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xff1A1A1D),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        backgroundColor: const Color(0xff1A1A1D),
+        child: const Icon(
+          Icons.info_outline_rounded,
+          color: Colors.white,
+        ),
+      ),
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xff1A1A1D),
@@ -61,9 +70,6 @@ class PokemonDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildContainer(BuildContext context) {
-    final List<String> typesList =
-        pokemon.type.split(',').map((type) => type.trim()).toList();
-
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -124,19 +130,12 @@ class PokemonDetailsScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16.0,
-                      vertical: 8.0,
+                      vertical: 16.0,
                     ),
-                    child: Row(
+                    child: Wrap(
+                      spacing: 8.0,
+                      runSpacing: 8.0,
                       children: [
-                        Text(
-                          "Type : ",
-                          style:
-                              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                        const Spacer(),
                         ...pokemon.type.split(',').map(
                               (type) => PokemonTypeChip(type: type.trim()),
                             ),
