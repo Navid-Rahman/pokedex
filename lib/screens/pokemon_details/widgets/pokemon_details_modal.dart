@@ -2,15 +2,16 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '/core/app_colors.dart';
 import '/models/pokemon.dart';
 
 class PokemonDetailsModal extends StatefulWidget {
   final Pokemon pokemon;
 
   const PokemonDetailsModal({
-    Key? key,
+    super.key,
     required this.pokemon,
-  }) : super(key: key);
+  });
 
   @override
   State<PokemonDetailsModal> createState() => _PokemonDetailsModalState();
@@ -46,7 +47,7 @@ class _PokemonDetailsModalState extends State<PokemonDetailsModal> {
               child: Material(
                 color: Colors.transparent,
                 child: Container(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   child: Stack(
                     children: [
                       Column(
@@ -66,7 +67,8 @@ class _PokemonDetailsModalState extends State<PokemonDetailsModal> {
                                     decoration: BoxDecoration(
                                       border: Border(
                                         right: BorderSide(
-                                          color: Colors.white.withOpacity(0.2),
+                                          color: Colors.white
+                                              .withValues(alpha: 0.2),
                                           width: 1,
                                         ),
                                       ),
@@ -87,19 +89,19 @@ class _PokemonDetailsModalState extends State<PokemonDetailsModal> {
                                             height: 60,
                                             decoration: BoxDecoration(
                                               color: isSelected
-                                                  ? Colors.amber
-                                                      .withOpacity(0.2)
+                                                  ? AppColors.primaryColor
+                                                      .withValues(alpha: 0.2)
                                                   : Colors.transparent,
                                               border: Border(
                                                 left: BorderSide(
                                                   color: isSelected
-                                                      ? Colors.amber
+                                                      ? AppColors.primaryColor
                                                       : Colors.transparent,
                                                   width: 4,
                                                 ),
                                                 bottom: BorderSide(
                                                   color: Colors.white
-                                                      .withOpacity(0.1),
+                                                      .withValues(alpha: 0.1),
                                                   width: 1,
                                                 ),
                                               ),
@@ -114,7 +116,7 @@ class _PokemonDetailsModalState extends State<PokemonDetailsModal> {
                                                   _tabLabels[index],
                                                   style: TextStyle(
                                                     color: isSelected
-                                                        ? Colors.amber
+                                                        ? AppColors.primaryColor
                                                         : Colors.white,
                                                     fontWeight: isSelected
                                                         ? FontWeight.bold
@@ -152,11 +154,11 @@ class _PokemonDetailsModalState extends State<PokemonDetailsModal> {
                         right: 8,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.amber,
+                            color: AppColors.primaryColor,
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
+                                color: Colors.black.withValues(alpha: 0.3),
                                 blurRadius: 8,
                                 spreadRadius: 1,
                               ),
@@ -185,10 +187,10 @@ class _PokemonDetailsModalState extends State<PokemonDetailsModal> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoItem('Species', widget.pokemon.species ?? 'Unknown'),
-          _buildInfoItem('Height', '${widget.pokemon.height ?? 'Unknown'} m'),
-          _buildInfoItem('Weight', '${widget.pokemon.weight ?? 'Unknown'} kg'),
-          _buildInfoItem('Abilities', widget.pokemon.abilities ?? 'Unknown'),
+          _buildInfoItem('Species', widget.pokemon.species),
+          _buildInfoItem('Height', '${widget.pokemon.height} m'),
+          _buildInfoItem('Weight', '${widget.pokemon.weight} kg'),
+          _buildInfoItem('Abilities', widget.pokemon.abilities),
         ],
       ),
     );
@@ -200,12 +202,10 @@ class _PokemonDetailsModalState extends State<PokemonDetailsModal> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoItem('EV Yield', widget.pokemon.evYield ?? 'Unknown'),
-          _buildInfoItem(
-              'Base Exp', widget.pokemon.baseExp?.toString() ?? 'Unknown'),
-          _buildInfoItem(
-              'Catch Rate', widget.pokemon.catchRate?.toString() ?? 'Unknown'),
-          _buildInfoItem('Growth Rate', widget.pokemon.growthRate ?? 'Unknown'),
+          _buildInfoItem('EV Yield', widget.pokemon.evYield),
+          _buildInfoItem('Base Exp', widget.pokemon.baseExp.toString()),
+          _buildInfoItem('Catch Rate', widget.pokemon.catchRate.toString()),
+          _buildInfoItem('Growth Rate', widget.pokemon.growthRate),
         ],
       ),
     );
@@ -217,10 +217,9 @@ class _PokemonDetailsModalState extends State<PokemonDetailsModal> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoItem('Egg Groups', widget.pokemon.eggGroups ?? 'Unknown'),
-          _buildInfoItem('Gender Ratio', widget.pokemon.gender ?? 'Unknown'),
-          _buildInfoItem(
-              'Egg Cycles', widget.pokemon.eggCycles?.toString() ?? 'Unknown'),
+          _buildInfoItem('Egg Groups', widget.pokemon.eggGroups),
+          _buildInfoItem('Gender Ratio', widget.pokemon.gender),
+          _buildInfoItem('Egg Cycles', widget.pokemon.eggCycles.toString()),
         ],
       ),
     );
@@ -232,14 +231,12 @@ class _PokemonDetailsModalState extends State<PokemonDetailsModal> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildStatBar('HP', widget.pokemon.hpBase ?? 0),
-          _buildStatBar('Attack', widget.pokemon.attackBase ?? 0),
-          _buildStatBar('Defense', widget.pokemon.defenseBase ?? 0),
-          _buildStatBar(
-              'Special Attack', widget.pokemon.specialAttackBase ?? 0),
-          _buildStatBar(
-              'Special Defense', widget.pokemon.specialDefenseBase ?? 0),
-          _buildStatBar('Speed', widget.pokemon.speedBase ?? 0),
+          _buildStatBar('HP', widget.pokemon.hpBase),
+          _buildStatBar('Attack', widget.pokemon.attackBase),
+          _buildStatBar('Defense', widget.pokemon.defenseBase),
+          _buildStatBar('Special Attack', widget.pokemon.specialAttackBase),
+          _buildStatBar('Special Defense', widget.pokemon.specialDefenseBase),
+          _buildStatBar('Speed', widget.pokemon.speedBase),
         ],
       ),
     );
@@ -250,21 +247,30 @@ class _PokemonDetailsModalState extends State<PokemonDetailsModal> {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontWeight: FontWeight.w500,
-              fontSize: 16,
+          Flexible(
+            flex: 2,
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+              ),
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+          const SizedBox(width: 16),
+          Flexible(
+            flex: 3,
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
           ),
         ],
@@ -307,7 +313,7 @@ class _PokemonDetailsModalState extends State<PokemonDetailsModal> {
             width: double.infinity,
             height: 10,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(5),
             ),
             child: FractionallySizedBox(
