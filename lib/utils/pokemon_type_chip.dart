@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'pokemon_types.dart';
 
@@ -21,7 +22,7 @@ class PokemonTypeChip extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -44,18 +45,32 @@ class PokemonTypeChip extends StatelessWidget {
                 )
               ],
             ),
-            child: Text(
-              pokemonType.type,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                shadows: [
-                  Shadow(
-                    color: pokemonType.color.withValues(alpha: 0.7),
-                    blurRadius: 2,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Type icon
+                if (pokemonType.imagePath.isNotEmpty)
+                  SvgPicture.asset(
+                    pokemonType.imagePath,
+                    height: 40,
+                    width: 40,
                   ),
-                ],
-              ),
+                // Type text
+                Text(
+                  pokemonType.type,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        color: pokemonType.color.withValues(alpha: 0.7),
+                        blurRadius: 2,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),

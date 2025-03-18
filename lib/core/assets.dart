@@ -26,5 +26,5 @@ class Assets {
   static const String kWaterType = 'assets/pokemon_types/Water.svg';
 
   /// Pokemon Cards
-  static const String kForestCard = 'assets/pokemon_cards/Forest_Card_1.png';
+  static const String kForestCard = 'assets/pokemon_cards/forest_card.png';
 }
