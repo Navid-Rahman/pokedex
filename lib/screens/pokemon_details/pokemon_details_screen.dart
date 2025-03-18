@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '/core/assets.dart';
 import '/models/pokemon.dart';
 import '/utils/pokemon_type_chip.dart';
+import 'widgets/pokemon_details_modal.dart';
 
 class PokemonDetailsScreen extends StatelessWidget {
   final Pokemon pokemon;
@@ -24,7 +25,36 @@ class PokemonDetailsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xff1A1A1D),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(
+            PageRouteBuilder(
+              opaque: false,
+              barrierDismissible: true,
+              barrierColor: Colors.black.withOpacity(0.5),
+              pageBuilder: (context, _, __) {
+                return Align(
+                  alignment: Alignment.centerRight,
+                  child: PokemonDetailsModal(pokemon: pokemon),
+                );
+              },
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0);
+                const end = Offset.zero;
+                const curve = Curves.easeInOut;
+
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
+                var offsetAnimation = animation.drive(tween);
+
+                return SlideTransition(
+                  position: offsetAnimation,
+                  child: child,
+                );
+              },
+            ),
+          );
+        },
         backgroundColor: const Color(0xff1A1A1D),
         child: const Icon(
           Icons.info_outline_rounded,
