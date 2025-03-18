@@ -19,10 +19,12 @@ class PokemonCard extends StatelessWidget {
         await _navigateToPokemonDetails(context);
       },
       child: Card(
-        elevation: 4,
+        elevation: 10,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
+        shadowColor: Colors.white,
+        surfaceTintColor: Colors.white,
         color: Colors.white,
         child: Stack(
           children: [

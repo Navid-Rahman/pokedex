@@ -4,6 +4,8 @@ class Assets {
   static const String kSplashScreen = 'assets/contents/splash_screen.png';
   static const String kAppTitle = 'assets/contents/pokedex_title.svg';
   static const String kPokeBallIcon = 'assets/contents/pokeball.svg';
+  static const String kPokeBallWatermarkIcon =
+      'assets/contents/pokeball_watermark.png';
 
   /// Pokemon Type
   static const String kBugType = 'assets/pokemon_types/Bug.svg';
