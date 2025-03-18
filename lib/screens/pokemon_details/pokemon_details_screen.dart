@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import '/core/assets.dart';
 import '/models/pokemon.dart';
 import '/utils/pokemon_type_chip.dart';
-import 'widgets/pokemon_details_modal.dart';
+import 'widgets/pokemon_details_modal_sheet.dart';
 
 class PokemonDetailsScreen extends StatelessWidget {
   final Pokemon pokemon;
