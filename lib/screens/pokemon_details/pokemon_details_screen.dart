@@ -30,7 +30,7 @@ class PokemonDetailsScreen extends StatelessWidget {
             PageRouteBuilder(
               opaque: false,
               barrierDismissible: true,
-              barrierColor: Colors.black.withOpacity(0.5),
+              barrierColor: Colors.black.withValues(alpha: 0.5),
               pageBuilder: (context, _, __) {
                 return Align(
                   alignment: Alignment.centerRight,

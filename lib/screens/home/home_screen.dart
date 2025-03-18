@@ -17,9 +17,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryColor,
+      backgroundColor: const Color(0xff1A1A1D),
       appBar: AppBar(
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: const Color(0xff1A1A1D),
         leading: SvgPicture.asset(
           Assets.kPokeBallIcon,
           height: 30,
