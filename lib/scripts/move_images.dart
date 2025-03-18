@@ -7,12 +7,12 @@ import 'package:flutter/cupertino.dart';
 /// - Brackets `(` and `)` in file names are removed.
 /// - Spaces and hyphens `-` in file names are replaced with underscores `_`.
 /// - The script assumes the source directory is located at `../assets/Pokemon_Images_DB`
-///   and the target directory is located at `../assets/Pokemon_Images`.
+///   and the target directory is located at `../assets/pokemon_Images`.
 
 void main() {
   /// Define source and target directories
   final sourceDir = Directory('../assets/Pokemon_Images_DB');
-  final targetDir = Directory('../assets/Pokemon_Images');
+  final targetDir = Directory('../assets/pokemon_Images');
 
   /// Check if the source directory exists
   if (!sourceDir.existsSync()) {

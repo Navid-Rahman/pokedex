@@ -64,7 +64,7 @@ flutter:
     - assets/contents/
     - assets/pokemon_cards/
     - assets/data/pokemonDB_dataset.json
-    - assets/Pokemon_Images/
+    - assets/pokemon_Images/
     - assets/pokemon_types/
 
   # To add custom fonts to your application, add a fonts section here, in this

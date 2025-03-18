@@ -26,7 +26,7 @@ class PokemonImageService {
       // Filter for Pokémon pokemon_cards ending with `_new.png`.
       _cachedImagePaths = Future.value(manifestMap.keys
           .where((String key) =>
-              key.startsWith('assets/Pokemon_Images/') &&
+              key.startsWith('assets/pokemon_Images/') &&
               key.endsWith('_new.png'))
           .toList());
 
@@ -57,7 +57,7 @@ class PokemonImageService {
         .replaceAll('-', '_')
         .replaceAll('(', '')
         .replaceAll(')', '');
-    final expectedPath = 'assets/Pokemon_Images/${formattedName}_new.png';
+    final expectedPath = 'assets/pokemon_Images/${formattedName}_new.png';
 
     // Check if the exact path exists in the cached image paths.
     final match = imagePaths.firstWhere(
