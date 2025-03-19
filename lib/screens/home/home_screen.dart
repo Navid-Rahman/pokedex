@@ -3,13 +3,15 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 import '/core/app_colors.dart';
 import '/core/assets.dart';
 import '/data/pokemon_data.dart';
 import '/models/pokemon.dart';
+import '/service/pokemon_filter_service.dart';
 import '/service/pokemon_search_service.dart';
-import '../../utils/pokedex_loader.dart';
+import '/utils/pokedex_loader.dart';
 import 'widgets/home_grid_container.dart';
 
 class HomeScreen extends HookWidget {
@@ -24,45 +26,114 @@ class HomeScreen extends HookWidget {
     final filteredPokemon = useState<List<Pokemon>>([]);
     final isLoading = useState(true);
     final searchController = useTextEditingController();
+    final sortOrder = useState(PokemonSortOrder.byNumber);
 
     // Effect hook for loading Pokemon
     useEffect(() {
       Future<void> loadPokemon() async {
         try {
           final pokemonList = await PokemonData.loadPokemon();
+          // Initially sort by number
+          final sortedList =
+              PokemonFilterService.sortPokemon(pokemonList, sortOrder.value);
           allPokemon.value = pokemonList;
-          filteredPokemon.value = pokemonList;
+          filteredPokemon.value = sortedList;
           isLoading.value = false;
         } catch (e) {
           isLoading.value = false;
-          debugPrint('Error loading Pokemon: $e');
+          print('Error loading Pokemon: $e');
         }
       }
 
       loadPokemon();
       return null;
-    }, const []);
+    }, const []); // Empty dependency array means this effect runs once on mount
 
-    // Effect hook for search changes
+    // Effect for handling search changes and applying current filter
     useEffect(() {
-      void onSearchChanged() {
-        final query = searchController.text;
+      void updateFilteredList() {
+        // First apply search
+        final searchResults = PokemonSearchService.filterPokemon(
+            allPokemon.value, searchController.text);
+
+        // Then apply current sort order
         filteredPokemon.value =
-            PokemonSearchService.filterPokemon(allPokemon.value, query);
+            PokemonFilterService.sortPokemon(searchResults, sortOrder.value);
       }
 
-      // Add listener
-      searchController.addListener(onSearchChanged);
+      // Initial update
+      updateFilteredList();
+
+      // Add listener for search changes
+      searchController.addListener(updateFilteredList);
 
       // Cleanup function
       return () {
-        searchController.removeListener(onSearchChanged);
+        searchController.removeListener(updateFilteredList);
       };
-    }, [searchController, allPokemon.value]); // Dependencies for this effect
+    }, [searchController.text, sortOrder.value, allPokemon.value]);
 
     // Clear search function
     void clearSearch() {
       searchController.clear();
+    }
+
+    // Show filter options with Wolt Modal Sheet
+    void showFilterOptions() {
+      WoltModalSheet.show<void>(
+        context: context,
+        pageListBuilder: (BuildContext context) {
+          return [
+            WoltModalSheetPage(
+              backgroundColor: const Color(0xff1A1A1D),
+              hasTopBarLayer: true,
+              topBarTitle: Text(
+                'Sort Pokémon by',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              isTopBarLayerAlwaysVisible: true,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 16.0, horizontal: 16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 8),
+                    _buildSortOption(
+                      context,
+                      'Number',
+                      Icons.tag,
+                      sortOrder.value == PokemonSortOrder.byNumber,
+                      () {
+                        sortOrder.value = PokemonSortOrder.byNumber;
+                        Navigator.pop(context);
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    _buildSortOption(
+                      context,
+                      'Name',
+                      Icons.sort_by_alpha,
+                      sortOrder.value == PokemonSortOrder.byName,
+                      () {
+                        sortOrder.value = PokemonSortOrder.byName;
+                        Navigator.pop(context);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            ),
+          ];
+        },
+        onModalDismissedWithBarrierTap: () {
+          Navigator.of(context).pop();
+        },
+      );
     }
 
     return Scaffold(
@@ -84,7 +155,8 @@ class HomeScreen extends HookWidget {
         child: Column(
           children: [
             // Search row
-            _buildSearchRow(context, searchController, clearSearch),
+            _buildSearchRow(
+                context, searchController, clearSearch, showFilterOptions),
             const SizedBox(height: 24),
             // Pokemon list
             Expanded(
@@ -97,43 +169,86 @@ class HomeScreen extends HookWidget {
     );
   }
 
-  Widget _buildSearchRow(BuildContext context, TextEditingController controller,
-      VoidCallback onClear) {
+  Widget _buildSortOption(
+    BuildContext context,
+    String title,
+    IconData icon,
+    bool isSelected,
+    VoidCallback onTap,
+  ) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: Colors.white),
+              const SizedBox(width: 16),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.white,
+                    ),
+              ),
+              const Spacer(),
+              if (isSelected)
+                Icon(Icons.check_circle, color: AppColors.primaryColor),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchRow(
+    BuildContext context,
+    TextEditingController controller,
+    VoidCallback onClear,
+    VoidCallback onFilterTap,
+  ) {
     return Row(
       children: [
         Expanded(
           flex: 4,
           child: SizedBox(
-              height: 48,
-              child: GestureDetector(
-                onTap: () {
+            height: 48,
+            child: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: SearchBar(
+                controller: controller,
+                backgroundColor: WidgetStateProperty.all(Colors.white),
+                leading: Icon(
+                  Icons.search,
+                  color: AppColors.primaryColor,
+                ),
+                trailing: [
+                  if (controller.text.isNotEmpty)
+                    IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: onClear,
+                    ),
+                ],
+                hintText: "Search Pokémon...",
+                hintStyle: WidgetStateProperty.all(
+                  Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                ),
+                onTapOutside: (event) {
                   FocusScope.of(context).unfocus();
                 },
-                child: SearchBar(
-                  controller: controller,
-                  backgroundColor: WidgetStateProperty.all(Colors.white),
-                  leading: Icon(
-                    Icons.search,
-                    color: AppColors.primaryColor,
-                  ),
-                  trailing: [
-                    if (controller.text.isNotEmpty)
-                      IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: onClear,
-                      ),
-                  ],
-                  hintText: "Search Pokémon...",
-                  hintStyle: WidgetStateProperty.all(
-                    Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                  ),
-                  onTapOutside: (event) {
-                    FocusScope.of(context).unfocus();
-                  },
-                ),
-              )),
+              ),
+            ),
+          ),
         ),
         Expanded(
           flex: 1,
@@ -141,6 +256,7 @@ class HomeScreen extends HookWidget {
             elevation: 10.0,
             shape: const CircleBorder(),
             child: GestureDetector(
+              onTap: onFilterTap,
               child: Container(
                 height: 48,
                 decoration: const BoxDecoration(
