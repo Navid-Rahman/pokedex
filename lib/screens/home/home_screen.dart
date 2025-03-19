@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pokedex/utils/pokedex_loader.dart';
 
 import '/core/app_colors.dart';
 import '/core/assets.dart';
@@ -82,7 +83,7 @@ class HomeScreen extends StatelessWidget {
                 future: PokemonData.loadPokemon(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return PokeDexLoader();
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
