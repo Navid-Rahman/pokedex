@@ -41,7 +41,7 @@ class HomeScreen extends HookWidget {
           isLoading.value = false;
         } catch (e) {
           isLoading.value = false;
-          print('Error loading Pokemon: $e');
+          debugPrint('Error loading Pokemon: $e');
         }
       }
 
