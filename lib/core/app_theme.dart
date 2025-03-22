@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static ThemeData get theme => ThemeData(
         fontFamily: 'Poppins',
+        appBarTheme: AppBarTheme(scrolledUnderElevation: 0.0),
         textTheme: const TextTheme(
           displayLarge: TextStyle(fontSize: 96),
           displayMedium: TextStyle(fontSize: 80),
