@@ -128,7 +128,7 @@ class HomeScreen extends HookWidget {
       );
     }
 
-    Future<void> _logout() async {
+    Future<void> logout() async {
       AppLogger.info('Logout initiated');
       await Provider.of<AuthService>(context, listen: false).signOut();
       Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
@@ -150,7 +150,7 @@ class HomeScreen extends HookWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: _logout,
+            onPressed: logout,
             tooltip: 'Logout',
           ),
         ],
