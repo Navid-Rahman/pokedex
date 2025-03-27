@@ -3,10 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pokedex/core/assets.dart';
 import 'package:provider/provider.dart';
 
-import '/core/assets.dart';
-import '/service/auth_service.dart';
+import '../service/auth_service.dart';
 import 'home/home_screen.dart';
 
 class AuthScreen extends HookWidget {
@@ -15,12 +15,12 @@ class AuthScreen extends HookWidget {
   const AuthScreen({super.key});
 
   Future<void> _signInWithEmail(
-      BuildContext context,
-      TextEditingController emailController,
-      TextEditingController passwordController,
-      ValueNotifier<bool> isLoading) async {
-    final formKey = context.findAncestorWidgetOfExactType<Form>()!.key
-        as GlobalKey<FormState>;
+    BuildContext context,
+    GlobalKey<FormState> formKey,
+    TextEditingController emailController,
+    TextEditingController passwordController,
+    ValueNotifier<bool> isLoading,
+  ) async {
     if (!formKey.currentState!.validate()) return;
     isLoading.value = true;
     try {
@@ -44,12 +44,12 @@ class AuthScreen extends HookWidget {
   }
 
   Future<void> _signUpWithEmail(
-      BuildContext context,
-      TextEditingController emailController,
-      TextEditingController passwordController,
-      ValueNotifier<bool> isLoading) async {
-    final formKey = context.findAncestorWidgetOfExactType<Form>()!.key
-        as GlobalKey<FormState>;
+    BuildContext context,
+    GlobalKey<FormState> formKey,
+    TextEditingController emailController,
+    TextEditingController passwordController,
+    ValueNotifier<bool> isLoading,
+  ) async {
     if (!formKey.currentState!.validate()) return;
     isLoading.value = true;
     try {
@@ -73,7 +73,9 @@ class AuthScreen extends HookWidget {
   }
 
   Future<void> _signInWithGoogle(
-      BuildContext context, ValueNotifier<bool> isLoading) async {
+    BuildContext context,
+    ValueNotifier<bool> isLoading,
+  ) async {
     isLoading.value = true;
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
@@ -169,13 +171,22 @@ class AuthScreen extends HookWidget {
                         else ...[
                           ElevatedButton(
                             onPressed: () => isSignUpMode.value
-                                ? _signUpWithEmail(context, emailController,
-                                    passwordController, isLoading)
-                                : _signInWithEmail(context, emailController,
-                                    passwordController, isLoading),
+                                ? _signUpWithEmail(
+                                    context,
+                                    formKey,
+                                    emailController,
+                                    passwordController,
+                                    isLoading,
+                                  )
+                                : _signInWithEmail(
+                                    context,
+                                    formKey,
+                                    emailController,
+                                    passwordController,
+                                    isLoading,
+                                  ),
                             child: Text(
-                              isSignUpMode.value ? 'Sign Up' : 'Sign In',
-                            ),
+                                isSignUpMode.value ? 'Sign Up' : 'Sign In'),
                           ),
                           const SizedBox(height: 16),
                           OutlinedButton.icon(
