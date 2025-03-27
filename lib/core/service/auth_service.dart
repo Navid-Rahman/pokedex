@@ -4,9 +4,17 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import '../app_logger.dart'; // Adjust path
 
+/// Service class responsible for handling authentication using Firebase.
+///
+/// Provides methods for signing in and signing up with email/password,
+/// signing in with Google, signing out, and logging user data to Firestore.
 class AuthService {
+  /// Singleton instance of [AuthService].
   static final AuthService _instance = AuthService._internal();
+
+  /// Factory constructor to return the singleton instance.
   factory AuthService() => _instance;
+
   AuthService._internal() {
     AppLogger.info('AuthService initialized');
   }
@@ -14,8 +22,13 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  /// Returns the currently signed-in user, if any.
   User? get currentUser => _auth.currentUser;
 
+  /// Signs in a user with email and password.
+  ///
+  /// Returns the authenticated [User] object if successful.
+  /// Throws an error message if sign-in fails.
   Future<User?> signInWithEmail(String email, String password) async {
     AppLogger.info('Attempting email sign-in for $email');
     try {
@@ -35,6 +48,10 @@ class AuthService {
     }
   }
 
+  /// Registers a new user with email and password.
+  ///
+  /// Returns the authenticated [User] object if successful.
+  /// Throws an error message if sign-up fails.
   Future<User?> signUpWithEmail(String email, String password) async {
     AppLogger.info('Attempting email sign-up for $email');
     try {
@@ -55,6 +72,10 @@ class AuthService {
     }
   }
 
+  /// Signs in a user using Google authentication.
+  ///
+  /// Returns the authenticated [User] object if successful.
+  /// Throws an error message if sign-in fails.
   Future<User?> signInWithGoogle() async {
     AppLogger.info('Attempting Google sign-in');
     try {
@@ -88,6 +109,7 @@ class AuthService {
     }
   }
 
+  /// Logs user data to Firestore for tracking and analytics purposes.
   Future<void> _logUserData(User user) async {
     AppLogger.info('Logging user data for ${user.email}');
     try {
@@ -102,16 +124,18 @@ class AuthService {
     } catch (e) {
       AppLogger.error('Failed to log user data: $e');
       AppLogger.handle(e, StackTrace.current, 'Firestore error');
-      rethrow; // Rethrow to maintain original behavior
+      rethrow;
     }
   }
 
+  /// Signs out the currently authenticated user.
   Future<void> signOut() async {
     AppLogger.info('Signing out user');
     await _auth.signOut();
     AppLogger.verbose('User signed out successfully');
   }
 
+  /// Maps FirebaseAuthException error codes to user-friendly messages.
   String _mapAuthException(FirebaseAuthException e) {
     switch (e.code) {
       case 'user-not-found':
