@@ -53,7 +53,9 @@ class PokemonCard extends StatelessWidget {
               child: Text(
                 pokemon.name,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.black38,
+                    ),
               ),
             ),
             Positioned(
