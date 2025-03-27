@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 import '/core/app_colors.dart';
@@ -12,6 +13,8 @@ import '/models/pokemon.dart';
 import '/service/pokemon_filter_service.dart';
 import '/service/pokemon_search_service.dart';
 import '/utils/pokedex_loader.dart';
+import '../../service/auth_service.dart';
+import '../auth_screen.dart';
 import 'widgets/home_grid_container.dart';
 
 class HomeScreen extends HookWidget {
@@ -21,19 +24,16 @@ class HomeScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    // State hooks
     final allPokemon = useState<List<Pokemon>>([]);
     final filteredPokemon = useState<List<Pokemon>>([]);
     final isLoading = useState(true);
     final searchController = useTextEditingController();
     final sortOrder = useState(PokemonSortOrder.byNumber);
 
-    // Effect hook for loading Pokemon
     useEffect(() {
       Future<void> loadPokemon() async {
         try {
           final pokemonList = await PokemonData.loadPokemon();
-          // Initially sort by number
           final sortedList =
               PokemonFilterService.sortPokemon(pokemonList, sortOrder.value);
           allPokemon.value = pokemonList;
@@ -47,38 +47,23 @@ class HomeScreen extends HookWidget {
 
       loadPokemon();
       return null;
-    }, const []); // Empty dependency array means this effect runs once on mount
+    }, const []);
 
-    // Effect for handling search changes and applying current filter
     useEffect(() {
       void updateFilteredList() {
-        // First apply search
         final searchResults = PokemonSearchService.filterPokemon(
             allPokemon.value, searchController.text);
-
-        // Then apply current sort order
         filteredPokemon.value =
             PokemonFilterService.sortPokemon(searchResults, sortOrder.value);
       }
 
-      // Initial update
       updateFilteredList();
-
-      // Add listener for search changes
       searchController.addListener(updateFilteredList);
-
-      // Cleanup function
-      return () {
-        searchController.removeListener(updateFilteredList);
-      };
+      return () => searchController.removeListener(updateFilteredList);
     }, [searchController.text, sortOrder.value, allPokemon.value]);
 
-    // Clear search function
-    void clearSearch() {
-      searchController.clear();
-    }
+    void clearSearch() => searchController.clear();
 
-    // Show filter options with Wolt Modal Sheet
     void showFilterOptions() {
       WoltModalSheet.show<void>(
         context: context,
@@ -130,10 +115,12 @@ class HomeScreen extends HookWidget {
             ),
           ];
         },
-        onModalDismissedWithBarrierTap: () {
-          Navigator.of(context).pop();
-        },
       );
+    }
+
+    Future<void> _logout() async {
+      await Provider.of<AuthService>(context, listen: false).signOut();
+      Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
     }
 
     return Scaffold(
@@ -149,16 +136,21 @@ class HomeScreen extends HookWidget {
           Assets.kAppTitle,
           height: 30,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white),
+            onPressed: _logout,
+            tooltip: 'Logout',
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            // Search row
             _buildSearchRow(
                 context, searchController, clearSearch, showFilterOptions),
             const SizedBox(height: 24),
-            // Pokemon list
             Expanded(
               child: _buildPokemonGridSection(
                   context, isLoading.value, filteredPokemon.value),
@@ -193,9 +185,10 @@ class HomeScreen extends HookWidget {
               const SizedBox(width: 16),
               Text(
                 title,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.white,
-                    ),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(color: Colors.white),
               ),
               const Spacer(),
               if (isSelected)
@@ -219,34 +212,22 @@ class HomeScreen extends HookWidget {
           flex: 4,
           child: SizedBox(
             height: 48,
-            child: GestureDetector(
-              onTap: () {
-                FocusScope.of(context).unfocus();
-              },
-              child: SearchBar(
-                controller: controller,
-                backgroundColor: WidgetStateProperty.all(Colors.white),
-                leading: Icon(
-                  Icons.search,
-                  color: AppColors.primaryColor,
-                ),
-                trailing: [
-                  if (controller.text.isNotEmpty)
-                    IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: onClear,
-                    ),
-                ],
-                hintText: "Search Pokémon...",
-                hintStyle: WidgetStateProperty.all(
-                  Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                ),
-                onTapOutside: (event) {
-                  FocusScope.of(context).unfocus();
-                },
+            child: SearchBar(
+              controller: controller,
+              backgroundColor: WidgetStateProperty.all(Colors.white),
+              leading: Icon(Icons.search, color: AppColors.primaryColor),
+              trailing: [
+                if (controller.text.isNotEmpty)
+                  IconButton(icon: const Icon(Icons.clear), onPressed: onClear),
+              ],
+              hintText: "Search Pokémon...",
+              hintStyle: WidgetStateProperty.all(
+                Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: Colors.grey[600]),
               ),
+              onTapOutside: (event) => FocusScope.of(context).unfocus(),
             ),
           ),
         ),
@@ -260,9 +241,7 @@ class HomeScreen extends HookWidget {
               child: Container(
                 height: 48,
                 decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                ),
+                    shape: BoxShape.circle, color: Colors.white),
                 child: const Icon(Icons.filter_alt),
               ),
             ),
@@ -274,10 +253,7 @@ class HomeScreen extends HookWidget {
 
   Widget _buildPokemonGridSection(
       BuildContext context, bool isLoading, List<Pokemon> pokemonList) {
-    if (isLoading) {
-      return const PokeDexLoader();
-    }
-
+    if (isLoading) return const PokeDexLoader();
     if (pokemonList.isEmpty) {
       return Center(
         child: Text(
@@ -289,13 +265,11 @@ class HomeScreen extends HookWidget {
         ),
       );
     }
-
     return Platform.isIOS
         ? SafeArea(
             top: false,
             bottom: true,
-            child: HomeGridContainer(pokemonList: pokemonList),
-          )
+            child: HomeGridContainer(pokemonList: pokemonList))
         : HomeGridContainer(pokemonList: pokemonList);
   }
 }

@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pokedex/firebase_options.dart';
+import 'package:pokedex/service/auth_service.dart';
+import 'package:provider/provider.dart';
 
 import 'core/app_theme.dart';
 import 'env/env.dart';
@@ -29,7 +31,12 @@ void main() async {
     );
   }
 
-  runApp(const MyApp());
+  runApp(
+    Provider<AuthService>(
+      create: (_) => AuthService(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
