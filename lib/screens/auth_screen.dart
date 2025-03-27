@@ -202,10 +202,26 @@ class AuthScreen extends HookWidget {
                           TextButton(
                             onPressed: () =>
                                 isSignUpMode.value = !isSignUpMode.value,
-                            child: Text(
-                              isSignUpMode.value
-                                  ? 'Already have an account? Sign In'
-                                  : 'New here? Sign Up',
+                            child: Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: isSignUpMode.value
+                                        ? 'Already have an account? '
+                                        : 'New here? ',
+                                  ),
+                                  TextSpan(
+                                    text: isSignUpMode.value
+                                        ? 'Sign In'
+                                        : 'Sign Up',
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
