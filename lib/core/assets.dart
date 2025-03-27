@@ -6,6 +6,7 @@ class Assets {
   static const String kPokeBallIcon = 'assets/contents/pokeball.svg';
   static const String kPokeBallWatermarkIcon =
       'assets/contents/pokeball_watermark.png';
+  static const String kGoogleIcon = 'assets/contents/google_icon.svg';
 
   /// Pokemon Type
   static const String kBugType = 'assets/pokemon_types/Bug.svg';
