@@ -8,12 +8,12 @@ import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 import '/core/app_colors.dart';
 import '/core/assets.dart';
-import '/data/pokemon_data.dart';
-import '/models/pokemon.dart';
-import '/service/pokemon_filter_service.dart';
-import '/service/pokemon_search_service.dart';
-import '/utils/pokedex_loader.dart';
-import '../../service/auth_service.dart';
+import '/core/data/pokemon_data.dart';
+import '/core/service/auth_service.dart';
+import '/core/service/pokemon_filter_service.dart';
+import '/core/service/pokemon_search_service.dart';
+import '/core/utils/pokedex_loader.dart';
+import '../../models/pokemon.dart';
 import '../auth_screen.dart';
 import 'widgets/home_grid_container.dart';
 

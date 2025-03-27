@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../core/assets.dart';
-import '../service/auth_service.dart';
+import '/core/assets.dart';
+import '/core/service/auth_service.dart';
 import 'auth_screen.dart';
 import 'home/home_screen.dart';
 

@@ -1,4 +1,4 @@
-import '/models/pokemon.dart';
+import '../../feature/models/pokemon.dart';
 
 enum PokemonSortOrder {
   byNumber,
@@ -15,8 +15,10 @@ class PokemonFilterService {
       case PokemonSortOrder.byNumber:
         sortedList.sort((a, b) {
           // Remove any non-numeric characters and convert to int for proper numeric sorting
-          final aNum = int.tryParse(a.number.replaceAll(RegExp(r'[^\d]'), '')) ?? 0;
-          final bNum = int.tryParse(b.number.replaceAll(RegExp(r'[^\d]'), '')) ?? 0;
+          final aNum =
+              int.tryParse(a.number.replaceAll(RegExp(r'[^\d]'), '')) ?? 0;
+          final bNum =
+              int.tryParse(b.number.replaceAll(RegExp(r'[^\d]'), '')) ?? 0;
           return aNum.compareTo(bNum);
         });
         break;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/models/pokemon.dart';
+import '../../../models/pokemon.dart';
 import 'base_stats_tab.dart';
 import 'basic_info_tab.dart';
 import 'battle_stats_tab.dart';

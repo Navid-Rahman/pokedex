@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex/screens/auth_screen.dart';
 
-import 'models/pokemon.dart';
-import 'screens/home/home_screen.dart';
-import 'screens/pokemon_details/pokemon_details_screen.dart';
-import 'screens/splash_screen.dart';
+import '/feature/models/pokemon.dart';
+import '/feature/screens/auth_screen.dart';
+import '/feature/screens/home/home_screen.dart';
+import '/feature/screens/pokemon_details/pokemon_details_screen.dart';
+import '/feature/screens/splash_screen.dart';
 
 Map<String, Widget Function(BuildContext)> routes = {
   SplashScreen.routeName: (context) => const SplashScreen(),
-  AuthScreen.routeName: (context) => const AuthScreen(), // Add this
+  AuthScreen.routeName: (context) => const AuthScreen(),
   HomeScreen.routeName: (context) => const HomeScreen(),
   PokemonDetailsScreen.routeName: (context) {
     final args =

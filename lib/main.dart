@@ -2,14 +2,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pokedex/core/app_theme.dart';
-import 'package:pokedex/firebase_options.dart';
-import 'package:pokedex/service/auth_service.dart';
 import 'package:provider/provider.dart';
 
-import 'env/env.dart';
-import 'routes.dart';
-import 'screens/splash_screen.dart';
+import 'core/app_theme.dart';
+import 'core/env/env.dart';
+import 'core/routes/routes.dart';
+import 'core/service/auth_service.dart';
+import 'feature/screens/splash_screen.dart';
+import 'firebase_options.dart';
 
 /// The entry point of the application.
 ///
@@ -68,9 +68,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'PokéDex',
-      routes: routes, // Defined application routes
-      theme: AppTheme.theme, // Apply global theme
-      initialRoute: SplashScreen.routeName, // Set the initial screen
+      routes: routes,
+      theme: AppTheme.theme,
+      initialRoute: SplashScreen.routeName,
     );
   }
 }

@@ -3,10 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pokedex/core/assets.dart';
 import 'package:provider/provider.dart';
 
-import '../service/auth_service.dart';
+import '/core/assets.dart';
+import '/core/service/auth_service.dart';
 import 'home/home_screen.dart';
 
 class AuthScreen extends HookWidget {

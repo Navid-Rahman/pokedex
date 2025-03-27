@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/models/pokemon.dart';
+import '../../../models/pokemon.dart';
 import 'stat_bar.dart';
 
 class BaseStatsTab extends StatelessWidget {

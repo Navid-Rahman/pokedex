@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import '/models/pokemon.dart';
+import '../../../models/pokemon.dart';
 import 'pokemon_card.dart';
 
 class HomeGridContainer extends StatelessWidget {

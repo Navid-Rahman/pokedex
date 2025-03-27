@@ -1,31 +1,45 @@
 import 'package:flutter/material.dart';
 
-import '/models/pokemon.dart';
+import '../../../models/pokemon.dart';
 
-class BattleStatsTab extends StatelessWidget {
+class EggDetailsTab extends StatelessWidget {
   final Pokemon pokemon;
 
-  const BattleStatsTab({super.key, required this.pokemon});
+  const EggDetailsTab({super.key, required this.pokemon});
 
-  // Format EV Yield to remove numbers and clarify
-  String _formatEVYield(String? evYield) {
-    if (evYield == null) return 'Unknown';
-    // Remove redundant numbering if present
-    return evYield.replaceAll(RegExp(r'\d+\s*'), '').trim();
+  // Format Egg Groups
+  String _formatEggGroups(String? eggGroups) {
+    if (eggGroups == null || eggGroups.isEmpty) return 'Unknown';
+    return eggGroups.split(',').map((group) => group.trim()).join(', ');
   }
 
-  // Extract just the catch rate number and percentage
-  String _formatCatchRate(String? catchRate) {
-    if (catchRate == null) return 'Unknown';
-    final match = RegExp(r'(\d+)\s*\(([\d.]+%[^)]+)\)').firstMatch(catchRate);
-    return match != null ? '${match.group(1)} (${match.group(2)})' : catchRate;
+  // Format Gender Ratio with text and symbols
+  String _formatGenderRatio(String? gender) {
+    if (gender == null || gender.isEmpty) return 'Unknown';
+    if (gender == 'Genderless') return gender;
+
+    final parts = gender.split(', ');
+    if (parts.length != 2) return gender; // Handle unexpected formats
+
+    final malePercentage = RegExp(r'\d+').firstMatch(parts[0])?.group(0) ?? '0';
+    final femalePercentage =
+        RegExp(r'\d+').firstMatch(parts[1])?.group(0) ?? '0';
+
+    return 'Male ♂ : $malePercentage%\nFemale ♀ : $femalePercentage%';
   }
 
-  // Format base friendship to show value and description
-  String _formatFriendship(String? friendship) {
-    if (friendship == null) return 'Unknown';
-    final match = RegExp(r'(\d+)\s*\(([^)]+)\)').firstMatch(friendship);
-    return match != null ? '${match.group(1)} - ${match.group(2)}' : friendship;
+  // Format Egg Cycles
+  String _formatEggCycles(String? eggCycles) {
+    if (eggCycles == null || eggCycles.isEmpty) return 'Unknown';
+
+    final cycleMatch = RegExp(r'^\d+').firstMatch(eggCycles);
+    final cycles = cycleMatch != null ? cycleMatch.group(0) : 'Unknown';
+
+    final stepsMatch =
+        RegExp(r'\(([\d,]+–[\d,]+)\s*steps\)').firstMatch(eggCycles);
+    final steps = stepsMatch != null ? ' (${stepsMatch.group(1)} steps)' : '';
+
+    return '$cycles cycles$steps';
   }
 
   @override
@@ -35,9 +49,8 @@ class BattleStatsTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title with Pokémon flair
           Text(
-            'Battle Stats',
+            'Egg Details',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -51,50 +64,39 @@ class BattleStatsTab extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _buildStatCard(
-            icon: Icons.trending_up, // EV Yield
-            label: 'EV Yield',
-            value: _formatEVYield(pokemon.evYield),
-            color: Colors.red,
+          _buildEggCard(
+            icon: Icons.group,
+            label: 'Egg Groups',
+            value: _formatEggGroups(pokemon.eggGroups),
+            color: Colors.teal,
+            isMultiline: pokemon.eggGroups.contains(','),
           ),
           const SizedBox(height: 12),
-          _buildStatCard(
-            icon: Icons.star_border,
-            label: 'Base Exp',
-            value: pokemon.baseExp.toString(),
-            color: Colors.yellow,
+          _buildEggCard(
+            icon: Icons.wc,
+            label: 'Gender Ratio',
+            value: _formatGenderRatio(pokemon.gender),
+            color: Colors.purple,
+            isMultiline: true, // Always multiline for gender ratio
           ),
           const SizedBox(height: 12),
-          _buildStatCard(
-            icon: Icons.catching_pokemon,
-            label: 'Catch Rate',
-            value: _formatCatchRate(pokemon.catchRate),
-            color: Colors.green,
-          ),
-          const SizedBox(height: 12),
-          _buildStatCard(
-            icon: Icons.favorite_border,
-            label: 'Friendship',
-            value: _formatFriendship(pokemon.baseFriendship),
-            color: Colors.pink,
-          ),
-          const SizedBox(height: 12),
-          _buildStatCard(
-            icon: Icons.speed,
-            label: 'Growth Rate',
-            value: pokemon.growthRate,
-            color: Colors.blue,
+          _buildEggCard(
+            icon: Icons.egg,
+            label: 'Egg Cycles',
+            value: _formatEggCycles(pokemon.eggCycles),
+            color: Colors.orange,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatCard({
+  Widget _buildEggCard({
     required IconData icon,
     required String label,
     required String value,
     required Color color,
+    bool isMultiline = false,
   }) {
     return Container(
       width: double.infinity,
@@ -112,7 +114,7 @@ class BattleStatsTab extends StatelessWidget {
         ],
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(8.0),
@@ -142,9 +144,10 @@ class BattleStatsTab extends StatelessWidget {
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
+                    height: 1.2,
                   ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
+                  overflow: isMultiline ? null : TextOverflow.ellipsis,
+                  maxLines: isMultiline ? null : 2,
                 ),
               ],
             ),

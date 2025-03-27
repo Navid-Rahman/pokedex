@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart' show rootBundle;
 
-import '/models/pokemon.dart';
+import '../../feature/models/pokemon.dart';
 
 class PokemonData {
   static Future<List<Pokemon>> loadPokemon() async {

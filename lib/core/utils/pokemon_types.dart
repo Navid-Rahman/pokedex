@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../core/assets.dart';
+import '../assets.dart';
 
 class PokemonType {
   final String type;

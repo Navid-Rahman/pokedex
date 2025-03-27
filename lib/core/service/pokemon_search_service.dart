@@ -1,4 +1,4 @@
-import '/models/pokemon.dart';
+import '../../feature/models/pokemon.dart';
 
 class PokemonSearchService {
   /// Filters the provided Pokemon list based on the search query
