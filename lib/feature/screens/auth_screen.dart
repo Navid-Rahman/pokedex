@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '/core/assets.dart';
 import '/core/service/auth_service.dart';
+import '../../core/app_logger.dart';
 import 'home/home_screen.dart';
 
 class AuthScreen extends HookWidget {
@@ -23,6 +24,7 @@ class AuthScreen extends HookWidget {
   ) async {
     if (!formKey.currentState!.validate()) return;
     isLoading.value = true;
+    AppLogger.info('Sign-in initiated with email: ${emailController.text}');
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
       await authService.signInWithEmail(
@@ -52,6 +54,7 @@ class AuthScreen extends HookWidget {
   ) async {
     if (!formKey.currentState!.validate()) return;
     isLoading.value = true;
+    AppLogger.info('Sign-up initiated with email: ${emailController.text}');
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
       await authService.signUpWithEmail(
@@ -77,6 +80,7 @@ class AuthScreen extends HookWidget {
     ValueNotifier<bool> isLoading,
   ) async {
     isLoading.value = true;
+    AppLogger.info('Google sign-in initiated');
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
       final user = await authService.signInWithGoogle();
@@ -238,10 +242,12 @@ class AuthScreen extends HookWidget {
   }
 
   void _navigateToHome(BuildContext context) {
+    AppLogger.info('Navigating to HomeScreen');
     Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
   }
 
   void _showErrorSnackBar(BuildContext context, String message) {
+    AppLogger.error('Error displayed: $message');
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );

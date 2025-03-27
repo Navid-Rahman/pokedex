@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 import '/core/app_colors.dart';
+import '/core/app_logger.dart';
 import '/core/assets.dart';
 import '/core/data/pokemon_data.dart';
 import '/core/service/auth_service.dart';
@@ -19,7 +20,6 @@ import 'widgets/home_grid_container.dart';
 
 class HomeScreen extends HookWidget {
   const HomeScreen({super.key});
-
   static const String routeName = '/home';
 
   @override
@@ -32,6 +32,7 @@ class HomeScreen extends HookWidget {
 
     useEffect(() {
       Future<void> loadPokemon() async {
+        AppLogger.info('Loading Pokémon data');
         try {
           final pokemonList = await PokemonData.loadPokemon();
           final sortedList =
@@ -39,9 +40,11 @@ class HomeScreen extends HookWidget {
           allPokemon.value = pokemonList;
           filteredPokemon.value = sortedList;
           isLoading.value = false;
+          AppLogger.verbose('Pokémon data loaded successfully');
         } catch (e) {
           isLoading.value = false;
-          debugPrint('Error loading Pokemon: $e');
+          AppLogger.error('Error loading Pokémon data: $e');
+          AppLogger.handle(e, StackTrace.current);
         }
       }
 
@@ -55,6 +58,7 @@ class HomeScreen extends HookWidget {
             allPokemon.value, searchController.text);
         filteredPokemon.value =
             PokemonFilterService.sortPokemon(searchResults, sortOrder.value);
+        AppLogger.debug('Filtered Pokémon list updated');
       }
 
       updateFilteredList();
@@ -62,9 +66,13 @@ class HomeScreen extends HookWidget {
       return () => searchController.removeListener(updateFilteredList);
     }, [searchController.text, sortOrder.value, allPokemon.value]);
 
-    void clearSearch() => searchController.clear();
+    void clearSearch() {
+      searchController.clear();
+      AppLogger.info('Search cleared');
+    }
 
     void showFilterOptions() {
+      AppLogger.info('Showing filter options');
       WoltModalSheet.show<void>(
         context: context,
         pageListBuilder: (BuildContext context) {
@@ -94,6 +102,7 @@ class HomeScreen extends HookWidget {
                       sortOrder.value == PokemonSortOrder.byNumber,
                       () {
                         sortOrder.value = PokemonSortOrder.byNumber;
+                        AppLogger.info('Sorting by number selected');
                         Navigator.pop(context);
                       },
                     ),
@@ -105,6 +114,7 @@ class HomeScreen extends HookWidget {
                       sortOrder.value == PokemonSortOrder.byName,
                       () {
                         sortOrder.value = PokemonSortOrder.byName;
+                        AppLogger.info('Sorting by name selected');
                         Navigator.pop(context);
                       },
                     ),
@@ -119,6 +129,7 @@ class HomeScreen extends HookWidget {
     }
 
     Future<void> _logout() async {
+      AppLogger.info('Logout initiated');
       await Provider.of<AuthService>(context, listen: false).signOut();
       Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
     }

@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import '../app_logger.dart'; // Adjust path
 
 class AuthService {
   static final AuthService _instance = AuthService._internal();
   factory AuthService() => _instance;
-  AuthService._internal();
+  AuthService._internal() {
+    AppLogger.info('AuthService initialized');
+  }
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -14,19 +17,26 @@ class AuthService {
   User? get currentUser => _auth.currentUser;
 
   Future<User?> signInWithEmail(String email, String password) async {
+    AppLogger.info('Attempting email sign-in for $email');
     try {
       final UserCredential credential = await _auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password.trim(),
       );
       await _logUserData(credential.user!);
+      AppLogger.verbose(
+          'Email sign-in successful for ${credential.user!.email}');
       return credential.user;
     } on FirebaseAuthException catch (e) {
-      throw _mapAuthException(e);
+      final errorMessage = _mapAuthException(e);
+      AppLogger.error('Sign-in failed: $errorMessage');
+      AppLogger.handle(e, StackTrace.current, 'FirebaseAuthException');
+      throw errorMessage;
     }
   }
 
   Future<User?> signUpWithEmail(String email, String password) async {
+    AppLogger.info('Attempting email sign-up for $email');
     try {
       final UserCredential credential =
           await _auth.createUserWithEmailAndPassword(
@@ -34,21 +44,31 @@ class AuthService {
         password: password.trim(),
       );
       await _logUserData(credential.user!);
+      AppLogger.verbose(
+          'Email sign-up successful for ${credential.user!.email}');
       return credential.user;
     } on FirebaseAuthException catch (e) {
-      throw _mapAuthException(e);
+      final errorMessage = _mapAuthException(e);
+      AppLogger.error('Sign-up failed: $errorMessage');
+      AppLogger.handle(e, StackTrace.current, 'FirebaseAuthException');
+      throw errorMessage;
     }
   }
 
   Future<User?> signInWithGoogle() async {
+    AppLogger.info('Attempting Google sign-in');
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
-      if (googleUser == null) return null;
+      if (googleUser == null) {
+        AppLogger.warning('Google sign-in cancelled by user');
+        return null;
+      }
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+      AppLogger.debug('Google auth token received');
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -57,13 +77,19 @@ class AuthService {
       final UserCredential userCredential =
           await _auth.signInWithCredential(credential);
       await _logUserData(userCredential.user!);
+      AppLogger.verbose(
+          'Google sign-in successful for ${userCredential.user!.email}');
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
-      throw _mapAuthException(e);
+      final errorMessage = _mapAuthException(e);
+      AppLogger.error('Google sign-in failed: $errorMessage');
+      AppLogger.handle(e, StackTrace.current, 'FirebaseAuthException');
+      throw errorMessage;
     }
   }
 
   Future<void> _logUserData(User user) async {
+    AppLogger.info('Logging user data for ${user.email}');
     try {
       await _firestore.collection('users').doc(user.uid).set({
         'uid': user.uid,
@@ -72,14 +98,18 @@ class AuthService {
         'photoURL': user.photoURL,
         'lastSignIn': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
+      AppLogger.verbose('User data logged successfully for ${user.email}');
     } catch (e) {
-      debugPrint('Failed to log user data: $e');
-      rethrow;
+      AppLogger.error('Failed to log user data: $e');
+      AppLogger.handle(e, StackTrace.current, 'Firestore error');
+      rethrow; // Rethrow to maintain original behavior
     }
   }
 
   Future<void> signOut() async {
+    AppLogger.info('Signing out user');
     await _auth.signOut();
+    AppLogger.verbose('User signed out successfully');
   }
 
   String _mapAuthException(FirebaseAuthException e) {
