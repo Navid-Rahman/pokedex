@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pokedex/core/utils/pokedex_loader.dart';
 import 'package:provider/provider.dart';
 
 import '/core/assets.dart';
@@ -171,7 +172,7 @@ class AuthScreen extends HookWidget {
                         ),
                         const SizedBox(height: 24),
                         if (isLoading.value)
-                          const Center(child: CircularProgressIndicator())
+                          const Center(child: PokeDexLoader())
                         else ...[
                           ElevatedButton(
                             onPressed: () => isSignUpMode.value
