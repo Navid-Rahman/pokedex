@@ -7,7 +7,6 @@ import 'package:pokedex/core/extension/snack_bar_x.dart';
 import 'package:provider/provider.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
-import '/core/app_colors.dart';
 import '/core/app_logger.dart';
 import '/core/assets.dart';
 import '/core/data/pokemon_data.dart';
@@ -16,6 +15,7 @@ import '/core/service/pokemon_filter_service.dart';
 import '/core/service/pokemon_search_service.dart';
 import '/core/utils/pokedex_dialogs.dart';
 import '/core/utils/pokedex_loader.dart';
+import '../../../core/themes/app_colors.dart';
 import '../../models/pokemon.dart';
 import '../auth_screen.dart';
 import 'widgets/home_grid_container.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '/core/app_colors.dart';
 import '/core/app_logger.dart';
+import '../themes/app_colors.dart';
 
 /// Utility class for displaying standardized dialogs across the app.
 class PokedexDialogs {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/core/app_colors.dart';
+import '../../../../core/themes/app_colors.dart';
 
 class VerticalTabs extends StatelessWidget {
   final List<String> tabLabels;

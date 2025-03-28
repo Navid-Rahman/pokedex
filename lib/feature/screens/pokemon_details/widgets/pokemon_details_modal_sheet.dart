@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import '/core/app_colors.dart';
+import '../../../../core/themes/app_colors.dart';
 import '../../../models/pokemon.dart';
 import 'pokemon_details_content.dart';
 
