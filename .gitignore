@@ -49,3 +49,9 @@ app.*.map.json
 # Environment files
 .env
 *.g.dart
+
+
+# xcode build
+**/ios/build/
+ios/build/
+ios/**/XCBuildData/
