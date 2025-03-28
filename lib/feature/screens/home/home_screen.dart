@@ -27,6 +27,7 @@ class HomeScreen extends HookWidget {
     final allPokemon = useState<List<Pokemon>>([]);
     final filteredPokemon = useState<List<Pokemon>>([]);
     final isLoading = useState(true);
+    final isLoggingOut = useState(false); // State for logout loading
     final searchController = useTextEditingController();
     final sortOrder = useState(PokemonSortOrder.byNumber);
 
@@ -128,10 +129,86 @@ class HomeScreen extends HookWidget {
       );
     }
 
-    Future<void> logout() async {
-      AppLogger.info('Logout initiated');
-      await Provider.of<AuthService>(context, listen: false).signOut();
-      Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
+    Future<void> showLogoutDialog() async {
+      AppLogger.info('Logout button pressed, showing confirmation dialog');
+      final shouldLogout = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          backgroundColor: const Color(0xff1A1A1D),
+          title: Text(
+            'Log Out',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Colors.white,
+                ),
+          ),
+          content: Text(
+            'Are you sure you want to log out?',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.white70,
+                ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                AppLogger.info('Logout cancelled');
+                Navigator.of(context).pop(false);
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.white70),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                AppLogger.info('Logout confirmed');
+                Navigator.of(context).pop(true);
+              },
+              child: const Text(
+                'Log Out',
+                style: TextStyle(color: AppColors.primaryColor),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      if (shouldLogout == true && context.mounted) {
+        isLoggingOut.value = true;
+        AppLogger.info('Logout initiated');
+        // Show full-screen loading overlay
+        showDialog(
+          context: context,
+          barrierDismissible: false, // Prevent dismissing the loading dialog
+          builder: (context) => const Center(
+            child: PokeDexLoader(),
+          ),
+        );
+
+        try {
+          await Provider.of<AuthService>(context, listen: false).signOut();
+          AppLogger.verbose('Logout successful');
+          if (context.mounted) {
+            Navigator.of(context).pop(); // Close loading dialog
+            Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
+          }
+        } catch (e) {
+          AppLogger.error('Logout failed: $e');
+          AppLogger.handle(e, StackTrace.current, 'Logout error');
+          if (context.mounted) {
+            Navigator.of(context).pop(); // Close loading dialog
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Logout failed: $e')),
+            );
+          }
+        } finally {
+          if (context.mounted) {
+            isLoggingOut.value = false;
+          }
+        }
+      }
     }
 
     return Scaffold(
@@ -148,11 +225,18 @@ class HomeScreen extends HookWidget {
           height: 30,
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: logout,
-            tooltip: 'Logout',
-          ),
+          isLoggingOut.value
+              ? const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: PokeDexLoader(
+                    size: 24,
+                  ),
+                )
+              : IconButton(
+                  icon: const Icon(Icons.logout, color: Colors.white),
+                  onPressed: showLogoutDialog,
+                  tooltip: 'Logout',
+                ),
         ],
       ),
       body: Padding(
