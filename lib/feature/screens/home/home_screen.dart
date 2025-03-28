@@ -13,6 +13,7 @@ import '/core/data/pokemon_data.dart';
 import '/core/service/auth_service.dart';
 import '/core/service/pokemon_filter_service.dart';
 import '/core/service/pokemon_search_service.dart';
+import '/core/utils/pokedex_dialogs.dart';
 import '/core/utils/pokedex_loader.dart';
 import '../../models/pokemon.dart';
 import '../auth_screen.dart';
@@ -130,52 +131,9 @@ class HomeScreen extends HookWidget {
     }
 
     Future<void> showLogoutDialog() async {
-      AppLogger.info('Logout button pressed, showing confirmation dialog');
-      final shouldLogout = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          backgroundColor: const Color(0xff1A1A1D),
-          title: Text(
-            'Log Out',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Colors.white,
-                ),
-          ),
-          content: Text(
-            'Are you sure you want to log out?',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white70,
-                ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                AppLogger.info('Logout cancelled');
-                Navigator.of(context).pop(false);
-              },
-              child: const Text(
-                'Cancel',
-                style: TextStyle(color: Colors.white70),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                AppLogger.info('Logout confirmed');
-                Navigator.of(context).pop(true);
-              },
-              child: const Text(
-                'Log Out',
-                style: TextStyle(color: AppColors.primaryColor),
-              ),
-            ),
-          ],
-        ),
-      );
+      final shouldLogout = await PokedexDialogs.showLogoutDialog(context);
 
-      if (shouldLogout == true && context.mounted) {
+      if (shouldLogout && context.mounted) {
         isLoggingOut.value = true;
         AppLogger.info('Logout initiated');
         // Show full-screen loading overlay
