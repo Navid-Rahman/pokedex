@@ -297,7 +297,10 @@ class HomeScreen extends HookWidget {
                 height: 48,
                 decoration: const BoxDecoration(
                     shape: BoxShape.circle, color: Colors.white),
-                child: const Icon(Icons.filter_alt),
+                child: Icon(
+                  Icons.filter_alt,
+                  color: AppColors.primaryColor,
+                ),
               ),
             ),
           ),
