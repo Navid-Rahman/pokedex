@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pokedex/core/extension/snack_bar_x.dart';
 import 'package:provider/provider.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
@@ -28,7 +29,7 @@ class HomeScreen extends HookWidget {
     final allPokemon = useState<List<Pokemon>>([]);
     final filteredPokemon = useState<List<Pokemon>>([]);
     final isLoading = useState(true);
-    final isLoggingOut = useState(false); // State for logout loading
+    final isLoggingOut = useState(false);
     final searchController = useTextEditingController();
     final sortOrder = useState(PokemonSortOrder.byNumber);
 
@@ -47,6 +48,9 @@ class HomeScreen extends HookWidget {
           isLoading.value = false;
           AppLogger.error('Error loading Pokémon data: $e');
           AppLogger.handle(e, StackTrace.current);
+          if (context.mounted) {
+            context.showErrorSnackBar('Failed to load Pokémon data: $e');
+          }
         }
       }
 
@@ -136,10 +140,9 @@ class HomeScreen extends HookWidget {
       if (shouldLogout && context.mounted) {
         isLoggingOut.value = true;
         AppLogger.info('Logout initiated');
-        // Show full-screen loading overlay
         showDialog(
           context: context,
-          barrierDismissible: false, // Prevent dismissing the loading dialog
+          barrierDismissible: false,
           builder: (context) => const Center(
             child: PokeDexLoader(),
           ),
@@ -149,17 +152,16 @@ class HomeScreen extends HookWidget {
           await Provider.of<AuthService>(context, listen: false).signOut();
           AppLogger.verbose('Logout successful');
           if (context.mounted) {
-            Navigator.of(context).pop(); // Close loading dialog
+            Navigator.of(context).pop();
             Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
+            context.showSuccessSnackBar('Logged out successfully');
           }
         } catch (e) {
           AppLogger.error('Logout failed: $e');
           AppLogger.handle(e, StackTrace.current, 'Logout error');
           if (context.mounted) {
-            Navigator.of(context).pop(); // Close loading dialog
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Logout failed: $e')),
-            );
+            Navigator.of(context).pop();
+            context.showErrorSnackBar('Logout failed: $e');
           }
         } finally {
           if (context.mounted) {

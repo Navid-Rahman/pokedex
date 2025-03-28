@@ -3,12 +3,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pokedex/core/utils/pokedex_loader.dart';
 import 'package:provider/provider.dart';
 
+import '/core/app_logger.dart';
 import '/core/assets.dart';
+import '/core/extension/snack_bar_x.dart';
 import '/core/service/auth_service.dart';
-import '../../core/app_logger.dart';
+import '/core/utils/pokedex_loader.dart';
 import 'home/home_screen.dart';
 
 class AuthScreen extends HookWidget {
@@ -37,7 +38,7 @@ class AuthScreen extends HookWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        _showErrorSnackBar(context, e.toString());
+        context.showErrorSnackBar(e.toString()); // Updated
       }
     } finally {
       if (context.mounted) {
@@ -67,7 +68,7 @@ class AuthScreen extends HookWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        _showErrorSnackBar(context, e.toString());
+        context.showErrorSnackBar(e.toString());
       }
     } finally {
       if (context.mounted) {
@@ -90,7 +91,7 @@ class AuthScreen extends HookWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        _showErrorSnackBar(context, e.toString());
+        context.showErrorSnackBar(e.toString());
       }
     } finally {
       if (context.mounted) {
@@ -244,13 +245,7 @@ class AuthScreen extends HookWidget {
 
   void _navigateToHome(BuildContext context) {
     AppLogger.info('Navigating to HomeScreen');
+    context.showSuccessSnackBar('Logged in successfully');
     Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
-  }
-
-  void _showErrorSnackBar(BuildContext context, String message) {
-    AppLogger.error('Error displayed: $message');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
   }
 }
