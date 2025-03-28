@@ -20,7 +20,7 @@ class StatBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const maxBaseValue = 255; // Max possible base stat value
+    const maxBaseValue = 255;
     final basePercentage = base / maxBaseValue;
 
     return Padding(
@@ -32,7 +32,7 @@ class StatBar extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(6.0),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 20),
@@ -70,7 +70,7 @@ class StatBar extends StatelessWidget {
                   width: double.infinity,
                   height: 10,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: FractionallySizedBox(
@@ -92,14 +92,14 @@ class StatBar extends StatelessWidget {
                     Text(
                       'Min: $min',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 12,
                       ),
                     ),
                     Text(
                       'Max: $max',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 12,
                       ),
                     ),
