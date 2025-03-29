@@ -1,0 +1,1 @@
+/Users/navidrahman/Flutter Projects/Projects/pokedex/build/app/intermediates/cxx/Debug/6s24k372/obj/x86
