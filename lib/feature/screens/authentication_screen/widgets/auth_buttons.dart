@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '/core/assets.dart';
 import '/core/themes/app_colors.dart';
 import '/core/themes/app_dimensions.dart';
 import '../../../../core/components/pokedex_loader.dart';
+import '../../../../core/utils/assets.dart';
 
 class AuthButtons extends StatelessWidget {
   final bool isLoading;

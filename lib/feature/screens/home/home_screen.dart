@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
-import '/core/assets.dart';
 import '/core/data/pokemon_data.dart';
 import '/core/extension/snack_bar_x.dart';
 import '/core/service/auth_service.dart';
@@ -18,6 +17,7 @@ import '../../../core/components/pokedex_dialogs.dart';
 import '../../../core/components/pokedex_loader.dart';
 import '../../../core/utils/app_logger.dart';
 import '../../../core/utils/app_validators.dart';
+import '../../../core/utils/assets.dart';
 import '../../models/pokemon.dart';
 import '../authentication_screen/auth_screen.dart';
 import 'widgets/home_grid_container.dart';

@@ -2,11 +2,11 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 
-import '/core/assets.dart';
 import '/core/components/blur_container.dart';
 import '/core/themes/app_colors.dart';
 import '/core/themes/app_dimensions.dart';
 import '../../../core/components/pokemon_type_chip.dart';
+import '../../../core/utils/assets.dart';
 import '../../models/pokemon.dart';
 import 'widgets/pokemon_details_modal_sheet.dart';
 
