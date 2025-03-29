@@ -273,7 +273,11 @@ class HomeScreen extends HookWidget {
               leading: Icon(Icons.search, color: AppColors.primaryColor),
               trailing: [
                 if (controller.text.isNotEmpty)
-                  IconButton(icon: const Icon(Icons.clear), onPressed: onClear),
+                  IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: onClear,
+                    color: Colors.grey[600],
+                  ),
               ],
               hintText: "Search Pokémon...",
               hintStyle: WidgetStateProperty.all(
@@ -281,6 +285,12 @@ class HomeScreen extends HookWidget {
                     .textTheme
                     .bodyMedium
                     ?.copyWith(color: Colors.grey[600]),
+              ),
+              textStyle: WidgetStateProperty.all(
+                Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: Colors.black),
               ),
               onTapOutside: (event) => FocusScope.of(context).unfocus(),
             ),
