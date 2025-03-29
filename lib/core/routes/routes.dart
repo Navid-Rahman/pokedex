@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '/feature/models/pokemon.dart';
-import '/feature/screens/auth_screen.dart';
 import '/feature/screens/home/home_screen.dart';
 import '/feature/screens/pokemon_details/pokemon_details_screen.dart';
 import '/feature/screens/splash_screen.dart';
+import '../../feature/screens/authentication_screen/auth_screen.dart';
 
 Map<String, Widget Function(BuildContext)> routes = {
   SplashScreen.routeName: (context) => const SplashScreen(),

@@ -3,21 +3,23 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pokedex/core/extension/snack_bar_x.dart';
 import 'package:provider/provider.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
-import '/core/app_logger.dart';
 import '/core/assets.dart';
 import '/core/data/pokemon_data.dart';
+import '/core/extension/snack_bar_x.dart';
 import '/core/service/auth_service.dart';
 import '/core/service/pokemon_filter_service.dart';
 import '/core/service/pokemon_search_service.dart';
-import '/core/utils/pokedex_dialogs.dart';
-import '/core/utils/pokedex_loader.dart';
-import '../../../core/themes/app_colors.dart';
+import '/core/themes/app_colors.dart';
+import '/core/themes/app_dimensions.dart';
+import '../../../core/components/pokedex_dialogs.dart';
+import '../../../core/components/pokedex_loader.dart';
+import '../../../core/utils/app_logger.dart';
+import '../../../core/utils/app_validators.dart';
 import '../../models/pokemon.dart';
-import '../auth_screen.dart';
+import '../authentication_screen/auth_screen.dart';
 import 'widgets/home_grid_container.dart';
 
 class HomeScreen extends HookWidget {
@@ -33,179 +35,33 @@ class HomeScreen extends HookWidget {
     final searchController = useTextEditingController();
     final sortOrder = useState(PokemonSortOrder.byNumber);
 
+    // Load Pokemon data
     useEffect(() {
-      Future<void> loadPokemon() async {
-        AppLogger.info('Loading Pokémon data');
-        try {
-          final pokemonList = await PokemonData.loadPokemon();
-          final sortedList =
-              PokemonFilterService.sortPokemon(pokemonList, sortOrder.value);
-          allPokemon.value = pokemonList;
-          filteredPokemon.value = sortedList;
-          isLoading.value = false;
-          AppLogger.verbose('Pokémon data loaded successfully');
-        } catch (e) {
-          isLoading.value = false;
-          AppLogger.error('Error loading Pokémon data: $e');
-          AppLogger.handle(e, StackTrace.current);
-          if (context.mounted) {
-            context.showErrorSnackBar('Failed to load Pokémon data: $e');
-          }
-        }
-      }
-
-      loadPokemon();
+      _loadPokemonData(
+          context, allPokemon, filteredPokemon, isLoading, sortOrder);
       return null;
     }, const []);
 
+    // Filter Pokemon based on search and sort order
     useEffect(() {
-      void updateFilteredList() {
-        final searchResults = PokemonSearchService.filterPokemon(
-            allPokemon.value, searchController.text);
-        filteredPokemon.value =
-            PokemonFilterService.sortPokemon(searchResults, sortOrder.value);
-        AppLogger.debug('Filtered Pokémon list updated');
-      }
-
-      updateFilteredList();
-      searchController.addListener(updateFilteredList);
-      return () => searchController.removeListener(updateFilteredList);
+      _setupSearchAndFilter(
+          searchController, allPokemon, filteredPokemon, sortOrder);
+      return () => searchController.removeListener(() {});
     }, [searchController.text, sortOrder.value, allPokemon.value]);
 
-    void clearSearch() {
-      searchController.clear();
-      AppLogger.info('Search cleared');
-    }
-
-    void showFilterOptions() {
-      AppLogger.info('Showing filter options');
-      WoltModalSheet.show<void>(
-        context: context,
-        pageListBuilder: (BuildContext context) {
-          return [
-            WoltModalSheetPage(
-              backgroundColor: const Color(0xff1A1A1D),
-              hasTopBarLayer: true,
-              topBarTitle: Text(
-                'Sort Pokémon by',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              isTopBarLayerAlwaysVisible: true,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 16.0, horizontal: 16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 8),
-                    _buildSortOption(
-                      context,
-                      'Number',
-                      Icons.tag,
-                      sortOrder.value == PokemonSortOrder.byNumber,
-                      () {
-                        sortOrder.value = PokemonSortOrder.byNumber;
-                        AppLogger.info('Sorting by number selected');
-                        Navigator.pop(context);
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    _buildSortOption(
-                      context,
-                      'Name',
-                      Icons.sort_by_alpha,
-                      sortOrder.value == PokemonSortOrder.byName,
-                      () {
-                        sortOrder.value = PokemonSortOrder.byName;
-                        AppLogger.info('Sorting by name selected');
-                        Navigator.pop(context);
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                ),
-              ),
-            ),
-          ];
-        },
-      );
-    }
-
-    Future<void> showLogoutDialog() async {
-      final shouldLogout = await PokedexDialogs.showLogoutDialog(context);
-
-      if (shouldLogout && context.mounted) {
-        isLoggingOut.value = true;
-        AppLogger.info('Logout initiated');
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => const Center(
-            child: PokeDexLoader(),
-          ),
-        );
-
-        try {
-          await Provider.of<AuthService>(context, listen: false).signOut();
-          AppLogger.verbose('Logout successful');
-          if (context.mounted) {
-            Navigator.of(context).pop();
-            Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
-            context.showSuccessSnackBar('Logged out successfully');
-          }
-        } catch (e) {
-          AppLogger.error('Logout failed: $e');
-          AppLogger.handle(e, StackTrace.current, 'Logout error');
-          if (context.mounted) {
-            Navigator.of(context).pop();
-            context.showErrorSnackBar('Logout failed: $e');
-          }
-        } finally {
-          if (context.mounted) {
-            isLoggingOut.value = false;
-          }
-        }
-      }
-    }
-
     return Scaffold(
-      backgroundColor: const Color(0xff1A1A1D),
-      appBar: AppBar(
-        backgroundColor: const Color(0xff1A1A1D),
-        leading: SvgPicture.asset(
-          Assets.kPokeBallIcon,
-          height: 30,
-          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcATop),
-        ),
-        title: SvgPicture.asset(
-          Assets.kAppTitle,
-          height: 30,
-        ),
-        actions: [
-          isLoggingOut.value
-              ? const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: PokeDexLoader(
-                    size: 24,
-                  ),
-                )
-              : IconButton(
-                  icon: const Icon(Icons.logout, color: Colors.white),
-                  onPressed: showLogoutDialog,
-                  tooltip: 'Logout',
-                ),
-        ],
-      ),
+      backgroundColor: AppColors.darkBackground,
+      appBar: _buildAppBar(context, isLoggingOut),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(AppDimensions.paddingDefault),
         child: Column(
           children: [
             _buildSearchRow(
-                context, searchController, clearSearch, showFilterOptions),
-            const SizedBox(height: 24),
+                context,
+                searchController,
+                () => searchController.clear(),
+                () => _showFilterOptions(context, sortOrder)),
+            const SizedBox(height: AppDimensions.paddingXLarge),
             Expanded(
               child: _buildPokemonGridSection(
                   context, isLoading.value, filteredPokemon.value),
@@ -213,6 +69,124 @@ class HomeScreen extends HookWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _loadPokemonData(
+    BuildContext context,
+    ValueNotifier<List<Pokemon>> allPokemon,
+    ValueNotifier<List<Pokemon>> filteredPokemon,
+    ValueNotifier<bool> isLoading,
+    ValueNotifier<PokemonSortOrder> sortOrder,
+  ) async {
+    AppLogger.info('Loading Pokémon data');
+    try {
+      final pokemonList = await PokemonData.loadPokemon();
+      final sortedList =
+          PokemonFilterService.sortPokemon(pokemonList, sortOrder.value);
+      allPokemon.value = pokemonList;
+      filteredPokemon.value = sortedList;
+      isLoading.value = false;
+      AppLogger.verbose('Pokémon data loaded successfully');
+    } catch (e) {
+      isLoading.value = false;
+      AppLogger.error('Error loading Pokémon data: $e');
+      if (context.mounted) {
+        context.showErrorSnackBar('Failed to load Pokémon data: $e');
+      }
+    }
+  }
+
+  void _setupSearchAndFilter(
+    TextEditingController searchController,
+    ValueNotifier<List<Pokemon>> allPokemon,
+    ValueNotifier<List<Pokemon>> filteredPokemon,
+    ValueNotifier<PokemonSortOrder> sortOrder,
+  ) {
+    void updateFilteredList() {
+      final searchResults = PokemonSearchService.filterPokemon(
+          allPokemon.value, searchController.text);
+      filteredPokemon.value =
+          PokemonFilterService.sortPokemon(searchResults, sortOrder.value);
+      AppLogger.debug('Filtered Pokémon list updated');
+    }
+
+    updateFilteredList();
+    searchController.addListener(updateFilteredList);
+  }
+
+  PreferredSizeWidget _buildAppBar(
+      BuildContext context, ValueNotifier<bool> isLoggingOut) {
+    return AppBar(
+      backgroundColor: AppColors.darkBackground,
+      leading: SvgPicture.asset(
+        Assets.kPokeBallIcon,
+        height: 30,
+        colorFilter:
+            const ColorFilter.mode(AppColors.iconLight, BlendMode.srcATop),
+      ),
+      title: SvgPicture.asset(
+        Assets.kAppTitle,
+        height: 30,
+      ),
+      actions: [
+        isLoggingOut.value
+            ? const Padding(
+                padding: EdgeInsets.all(AppDimensions.paddingDefault),
+                child: PokeDexLoader(size: AppDimensions.iconSizeDefault),
+              )
+            : IconButton(
+                icon: const Icon(Icons.logout, color: AppColors.iconLight),
+                onPressed: () => _showLogoutDialog(context, isLoggingOut),
+                tooltip: 'Logout',
+              ),
+      ],
+    );
+  }
+
+  void _showFilterOptions(
+      BuildContext context, ValueNotifier<PokemonSortOrder> sortOrder) {
+    AppLogger.info('Showing filter options');
+    WoltModalSheet.show<void>(
+      context: context,
+      pageListBuilder: (BuildContext context) {
+        return [
+          WoltModalSheetPage(
+            backgroundColor: AppColors.darkBackground,
+            hasTopBarLayer: true,
+            topBarTitle: Text(
+              'Sort Pokémon by',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: AppColors.textLight,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            isTopBarLayerAlwaysVisible: true,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: AppDimensions.paddingLarge,
+                horizontal: AppDimensions.paddingLarge,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildSortOption(context, 'Number', Icons.tag,
+                      sortOrder.value == PokemonSortOrder.byNumber, () {
+                    sortOrder.value = PokemonSortOrder.byNumber;
+                    Navigator.pop(context);
+                  }),
+                  const SizedBox(height: AppDimensions.paddingDefault),
+                  _buildSortOption(context, 'Name', Icons.sort_by_alpha,
+                      sortOrder.value == PokemonSortOrder.byName, () {
+                    sortOrder.value = PokemonSortOrder.byName;
+                    Navigator.pop(context);
+                  }),
+                ],
+              ),
+            ),
+          ),
+        ];
+      },
     );
   }
 
@@ -227,23 +201,26 @@ class HomeScreen extends HookWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppDimensions.borderRadiusDefault),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          padding: const EdgeInsets.symmetric(
+            vertical: AppDimensions.paddingMedium,
+            horizontal: AppDimensions.paddingLarge,
+          ),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            color: AppColors.backdrop,
+            borderRadius:
+                BorderRadius.circular(AppDimensions.borderRadiusDefault),
           ),
           child: Row(
             children: [
-              Icon(icon, color: Colors.white),
-              const SizedBox(width: 16),
+              Icon(icon, color: AppColors.iconLight),
+              const SizedBox(width: AppDimensions.paddingLarge),
               Text(
                 title,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
-                    ?.copyWith(color: Colors.white),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: AppColors.textLight,
+                    ),
               ),
               const Spacer(),
               if (isSelected)
@@ -253,6 +230,34 @@ class HomeScreen extends HookWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _showLogoutDialog(
+      BuildContext context, ValueNotifier<bool> isLoggingOut) async {
+    final shouldLogout = await PokedexDialogs.showLogoutDialog(context);
+    if (shouldLogout && context.mounted) {
+      isLoggingOut.value = true;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: PokeDexLoader()),
+      );
+      try {
+        await Provider.of<AuthService>(context, listen: false).signOut();
+        if (context.mounted) {
+          Navigator.of(context).pop();
+          Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
+          context.showSuccessSnackBar('Logged out successfully');
+        }
+      } catch (e) {
+        if (context.mounted) {
+          Navigator.of(context).pop();
+          context.showErrorSnackBar('Logout failed: $e');
+        }
+      } finally {
+        if (context.mounted) isLoggingOut.value = false;
+      }
+    }
   }
 
   Widget _buildSearchRow(
@@ -269,33 +274,34 @@ class HomeScreen extends HookWidget {
             height: 48,
             child: SearchBar(
               controller: controller,
-              backgroundColor: WidgetStateProperty.all(Colors.white),
+              backgroundColor:
+                  WidgetStateProperty.all(AppColors.cardBackground),
               leading: Icon(Icons.search, color: AppColors.primaryColor),
               trailing: [
                 if (controller.text.isNotEmpty)
-                  IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: onClear,
-                    color: Colors.grey[600],
-                  ),
+                  IconButton(icon: const Icon(Icons.clear), onPressed: onClear),
               ],
               hintText: "Search Pokémon...",
-              hintStyle: WidgetStateProperty.all(
-                Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: Colors.grey[600]),
-              ),
               textStyle: WidgetStateProperty.all(
-                Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: Colors.black),
+                Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textDark,
+                    ),
+              ),
+              hintStyle: WidgetStateProperty.all(
+                Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textDarkSecondary,
+                    ),
               ),
               onTapOutside: (event) => FocusScope.of(context).unfocus(),
+              onSubmitted: (value) {
+                if (AppValidators.required(value) == null) {
+                  FocusScope.of(context).unfocus();
+                }
+              },
             ),
           ),
         ),
+        const SizedBox(width: AppDimensions.paddingDefault),
         Expanded(
           flex: 1,
           child: Material(
@@ -306,7 +312,9 @@ class HomeScreen extends HookWidget {
               child: Container(
                 height: 48,
                 decoration: const BoxDecoration(
-                    shape: BoxShape.circle, color: Colors.white),
+                  shape: BoxShape.circle,
+                  color: AppColors.cardBackground,
+                ),
                 child: Icon(
                   Icons.filter_alt,
                   color: AppColors.primaryColor,
@@ -326,10 +334,9 @@ class HomeScreen extends HookWidget {
       return Center(
         child: Text(
           'No Pokémon found',
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge
-              ?.copyWith(color: Colors.white),
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: AppColors.textLight,
+              ),
         ),
       );
     }
@@ -337,7 +344,8 @@ class HomeScreen extends HookWidget {
         ? SafeArea(
             top: false,
             bottom: true,
-            child: HomeGridContainer(pokemonList: pokemonList))
+            child: HomeGridContainer(pokemonList: pokemonList),
+          )
         : HomeGridContainer(pokemonList: pokemonList);
   }
 }

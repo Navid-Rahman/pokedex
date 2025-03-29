@@ -1,18 +1,16 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
-import '../../../../core/themes/app_colors.dart';
+import '/core/components/blur_container.dart';
+import '/core/themes/app_colors.dart';
+import '/core/themes/app_dimensions.dart';
+import '/core/themes/app_styles.dart';
 import '../../../models/pokemon.dart';
 import 'pokemon_details_content.dart';
 
 class PokemonDetailsModal extends StatelessWidget {
   final Pokemon pokemon;
 
-  const PokemonDetailsModal({
-    super.key,
-    required this.pokemon,
-  });
+  const PokemonDetailsModal({super.key, required this.pokemon});
 
   @override
   Widget build(BuildContext context) {
@@ -24,45 +22,27 @@ class PokemonDetailsModal extends StatelessWidget {
         child: Container(
           width: screenSize.width,
           height: screenSize.height,
-          decoration: const BoxDecoration(
-            color: Color(0xff1A1A1D),
-          ),
-          child: ClipRRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Material(
-                color: Colors.transparent,
-                child: Container(
-                  color: Colors.white.withValues(alpha: 0.1),
-                  child: Stack(
-                    children: [
-                      PokemonDetailsContent(pokemon: pokemon),
-                      // Floating close button positioned relative to header
-                      Positioned(
-                        top: 8, // Align with header padding
-                        right: 8,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryColor,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.3),
-                                blurRadius: 8,
-                                spreadRadius: 1,
-                              ),
-                            ],
-                          ),
-                          child: IconButton(
-                            icon: const Icon(Icons.close, color: Colors.black),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                        ),
-                      ),
-                    ],
+          decoration: const BoxDecoration(color: AppColors.darkBackground),
+          child: BlurContainer(
+            child: Stack(
+              children: [
+                PokemonDetailsContent(pokemon: pokemon),
+                Positioned(
+                  top: AppDimensions.paddingDefault,
+                  right: AppDimensions.paddingDefault,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryColor,
+                      shape: BoxShape.circle,
+                      boxShadow: AppStyles.defaultShadow,
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.close, color: AppColors.iconDark),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
           ),
         ),

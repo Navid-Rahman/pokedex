@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 
 import '/core/assets.dart';
 import '/core/service/auth_service.dart';
-import '../../core/app_logger.dart';
-import 'auth_screen.dart';
+import '/core/themes/app_colors.dart';
+import '../../core/utils/app_logger.dart';
+import 'authentication_screen/auth_screen.dart';
 import 'home/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -40,6 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.darkBackground,
       body: Center(
         child: Image.asset(
           Assets.kSplashScreen,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '/core/themes/app_dimensions.dart';
 import '../../../models/pokemon.dart';
 import 'base_stats_tab.dart';
 import 'basic_info_tab.dart';
@@ -9,7 +10,6 @@ import 'vertical_tabs.dart';
 
 class PokemonDetailsContent extends StatefulWidget {
   final Pokemon pokemon;
-
   const PokemonDetailsContent({super.key, required this.pokemon});
 
   @override
@@ -19,12 +19,17 @@ class PokemonDetailsContent extends StatefulWidget {
 class _PokemonDetailsContentState extends State<PokemonDetailsContent> {
   int _selectedIndex = 0;
 
-  // Tab labels
-  final List<String> _tabLabels = [
-    'Basic Info',
-    'Battle Stats',
-    'Egg Details',
-    'Base Stats',
+  final tabs = [
+    {'label': 'Basic Info', 'widget': (Pokemon p) => BasicInfoTab(pokemon: p)},
+    {
+      'label': 'Battle Stats',
+      'widget': (Pokemon p) => BattleStatsTab(pokemon: p)
+    },
+    {
+      'label': 'Egg Details',
+      'widget': (Pokemon p) => EggDetailsTab(pokemon: p)
+    },
+    {'label': 'Base Stats', 'widget': (Pokemon p) => BaseStatsTab(pokemon: p)},
   ];
 
   @override
@@ -32,34 +37,25 @@ class _PokemonDetailsContentState extends State<PokemonDetailsContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Main content with padding to avoid overlap
         Expanded(
           child: Padding(
-            padding:
-                const EdgeInsets.only(top: 40.0), // Space for header and button
+            padding: const EdgeInsets.only(top: AppDimensions.paddingXLarge),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Vertical Tabs
                 VerticalTabs(
-                  tabLabels: _tabLabels,
+                  tabLabels: tabs.map((tab) => tab['label'] as String).toList(),
                   selectedIndex: _selectedIndex,
-                  onTabSelected: (index) {
-                    setState(() {
-                      _selectedIndex = index;
-                    });
-                  },
+                  onTabSelected: (index) =>
+                      setState(() => _selectedIndex = index),
                 ),
-                // Tab Content
                 Expanded(
                   child: IndexedStack(
                     index: _selectedIndex,
-                    children: [
-                      BasicInfoTab(pokemon: widget.pokemon),
-                      BattleStatsTab(pokemon: widget.pokemon),
-                      EggDetailsTab(pokemon: widget.pokemon),
-                      BaseStatsTab(pokemon: widget.pokemon),
-                    ],
+                    children: tabs
+                        .map((tab) => (tab['widget'] as Widget Function(
+                            Pokemon))(widget.pokemon))
+                        .toList(),
                   ),
                 ),
               ],

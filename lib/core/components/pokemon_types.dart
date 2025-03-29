@@ -7,8 +7,11 @@ class PokemonType {
   final Color color;
   final String imagePath;
 
-  PokemonType(
-      {required this.type, required this.color, required this.imagePath});
+  PokemonType({
+    required this.type,
+    required this.color,
+    required this.imagePath,
+  });
 }
 
 class PokemonTypes {

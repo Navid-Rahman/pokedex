@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/core/app_logger.dart';
+import '../utils/app_logger.dart';
 
 /// Extension on [BuildContext] to provide global SnackBar utilities.
 extension SnackBarX on BuildContext {

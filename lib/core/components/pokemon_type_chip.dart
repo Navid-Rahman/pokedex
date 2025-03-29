@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../themes/app_dimensions.dart';
 import 'pokemon_types.dart';
 
 class PokemonTypeChip extends StatelessWidget {
@@ -22,7 +23,8 @@ class PokemonTypeChip extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppDimensions.paddingMedium, vertical: 0),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,

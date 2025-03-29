@@ -5,11 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
-import 'core/app_logger.dart';
 import 'core/env/env.dart';
 import 'core/routes/routes.dart';
 import 'core/service/auth_service.dart';
 import 'core/themes/app_theme.dart';
+import 'core/utils/app_logger.dart';
 import 'feature/screens/splash_screen.dart';
 import 'firebase_options.dart';
 

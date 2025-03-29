@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/themes/app_colors.dart';
+import '../../../../core/themes/app_dimensions.dart';
+
 class PositionedBackground extends StatelessWidget {
   const PositionedBackground({super.key});
 
@@ -11,13 +14,13 @@ class PositionedBackground extends StatelessWidget {
       bottom: 0,
       height: 80,
       child: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFFEFEFEF),
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(8),
-            bottomRight: Radius.circular(8),
-            topLeft: Radius.circular(12),
-            topRight: Radius.circular(12),
+        decoration: BoxDecoration(
+          color: AppColors.secondaryColor,
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(AppDimensions.borderRadiusDefault),
+            bottomRight: Radius.circular(AppDimensions.borderRadiusDefault),
+            topLeft: Radius.circular(AppDimensions.borderRadiusMedium),
+            topRight: Radius.circular(AppDimensions.borderRadiusMedium),
           ),
         ),
       ),
